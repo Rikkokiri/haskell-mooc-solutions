@@ -2,3 +2,8 @@
 *.lock
 .stack-work
 score.json
+
+style.css
+img
+LICENSE
+README.md

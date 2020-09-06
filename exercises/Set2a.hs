@@ -21,7 +21,7 @@ import Data.List
 -- Ex 1: Define the constant years, that is a list of the values 1982,
 -- 2004 and 2020 in this order.
 
-years = todo
+years = [1982, 2004, 2020]
 
 ------------------------------------------------------------------------------
 -- Ex 2: define the function takeFinal, which returns the n last
@@ -75,7 +75,7 @@ substring i j s = todo
 --   isPalindrome "AB"       ==>  False
 
 isPalindrome :: String -> Bool
-isPalindrome str = todo
+isPalindrome str = str == reverse str
 
 ------------------------------------------------------------------------------
 -- Ex 6: implement the function palindromify that chops a character
@@ -102,7 +102,7 @@ palindromify s = todo
 --   safeDiv 4 0  ==> Nothing
 
 safeDiv :: Integer -> Integer -> Maybe Integer
-safeDiv x y = todo
+safeDiv x y = if y == 0 then Nothing else Just (x `div` y)
 
 ------------------------------------------------------------------------------
 -- Ex 8: implement a function greet that greets a person given a first
@@ -114,7 +114,8 @@ safeDiv x y = todo
 --   greet "John" (Just "Smith")  ==> "Hello, John Smith!"
 
 greet :: String -> Maybe String -> String
-greet first last = todo
+greet first last = "Hello, " ++ first ++ " " ++ last ++ "!"
+greet first Nothing = "Hello, " ++ first ++ "!"
 
 ------------------------------------------------------------------------------
 -- Ex 9: safe list indexing. Define a function safeIndex so that
