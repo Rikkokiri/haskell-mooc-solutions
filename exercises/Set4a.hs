@@ -103,6 +103,9 @@ rangeOf x = (head (reverse (sort x))) - (head (sort x))
 
 longest = todo
 
+
+comparison = sortBy (comparing length)
+
 ------------------------------------------------------------------------------
 -- Ex 6: Implement the function incrementKey, that takes a list of
 -- (key,value) pairs, and adds 1 to all the values that have the given key.
