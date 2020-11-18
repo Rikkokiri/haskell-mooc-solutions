@@ -219,6 +219,7 @@ rgb (Mix c1 c2) = map (/ 2.0) (zipWith (+) (rgb c1) (rgb c2))
 --   One True         ::  OneOrTwo Bool
 --   Two "cat" "dog"  ::  OneOrTwo String
 
+data OneOrTwo a = One a | Two a a
 
 ------------------------------------------------------------------------------
 -- Ex 10: define a recursive datatype KeyVals for storing a set of
@@ -239,14 +240,16 @@ rgb (Mix c1 c2) = map (/ 2.0) (zipWith (+) (rgb c1) (rgb c2))
 -- Also define the functions toList and fromList that convert between
 -- KeyVals and lists of pairs.
 
-data KeyVals k v = KeyValsUndefined
+data KeyVals k v = Empty | Pair k v (KeyVals k v)
   deriving Show
 
 toList :: KeyVals k v -> [(k,v)]
-toList = todo
+toList Empty = []
+toList (Pair k v kvs) = [(k, v)] ++ toList kvs
 
 fromList :: [(k,v)] -> KeyVals k v
-fromList = todo
+fromList [] = Empty
+fromList ((k,v):xs) = Pair k v (fromList xs)
 
 ------------------------------------------------------------------------------
 -- Ex 11: The data type Nat is the so called Peano
@@ -263,10 +266,15 @@ data Nat = Zero | PlusOne Nat
   deriving (Show,Eq)
 
 fromNat :: Nat -> Int
-fromNat n = todo
+fromNat Zero = 0
+fromNat (PlusOne x) = 1 + fromNat x
 
 toNat :: Int -> Maybe Nat
-toNat z = todo
+toNat z
+  | z == 0 = Just Zero
+  -- | z == 1 = Just PlusOne (Zero)
+  -- | z > 0 = PlusOne (toNat (z-1))
+  | otherwise = Nothing
 
 ------------------------------------------------------------------------------
 -- Ex 12: While pleasingly simple in its definition, the Nat datatype is not
@@ -326,10 +334,19 @@ inc (O b) = I b
 inc (I b) = O (inc b)
 
 prettyPrint :: Bin -> String
-prettyPrint = todo
+prettyPrint End = ""
+prettyPrint (O b) = "0" ++ prettyPrint b
+prettyPrint (I b) = "1" ++ prettyPrint b
 
 fromBin :: Bin -> Int
-fromBin = todo
+fromBin (O End) = 0
+fromBin (I End) = 1
+fromBin (O b) = 2 * fromBin b
+fromBin (I b) = 2 + 2 * fromBin b 
 
 toBin :: Int -> Bin
-toBin = todo
+toBin num
+  | num == 0 = O End
+  | num == 1 = I End
+  | mod num 2 == 0 = O (toBin (num `div` 2))
+  | otherwise = I (toBin (num `div` 2))
