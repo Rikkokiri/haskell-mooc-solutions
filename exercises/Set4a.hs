@@ -70,6 +70,7 @@ middle x y z
     | x > y = middle y x z
     | y > z = middle x z y
     | otherwise = y
+
 ------------------------------------------------------------------------------
 -- Ex 4: return the range of an input list, that is, the difference
 -- between the smallest and the largest element.
@@ -83,8 +84,8 @@ middle x y z
 --   rangeOf [4,2,1,3]          ==> 3
 --   rangeOf [1.5,1.0,1.1,1.2]  ==> 0.5
 
-rangeOf :: [a] -> a
-rangeOf = todo
+rangeOf :: (Ord a, Num a) => [a] -> a
+rangeOf x = (head (reverse (sort x))) - (head (sort x))
 
 ------------------------------------------------------------------------------
 -- Ex 5: given a list of lists, return the longest list. If there
