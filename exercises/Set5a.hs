@@ -267,14 +267,15 @@ data Nat = Zero | PlusOne Nat
 
 fromNat :: Nat -> Int
 fromNat Zero = 0
-fromNat (PlusOne x) = 1 + fromNat x
+fromNat (PlusOne x) = 1 + fromNat (x)
 
 toNat :: Int -> Maybe Nat
-toNat z
-  | z == 0 = Just Zero
-  -- | z == 1 = Just PlusOne (Zero)
-  -- | z > 0 = PlusOne (toNat (z-1))
-  | otherwise = Nothing
+toNat = todo
+--toNat z
+--    | z == 0 = Just Zero
+--    | z == 1 = PlusOne(Zero)
+--    | z > 0 = PlusOne((toNat (z-1)))
+--    | otherwise = Nothing
 
 ------------------------------------------------------------------------------
 -- Ex 12: While pleasingly simple in its definition, the Nat datatype is not
@@ -342,7 +343,7 @@ fromBin :: Bin -> Int
 fromBin (O End) = 0
 fromBin (I End) = 1
 fromBin (O b) = 2 * fromBin b
-fromBin (I b) = 2 + 2 * fromBin b 
+fromBin (I b) = 1 + 2 * fromBin b 
 
 toBin :: Int -> Bin
 toBin num
