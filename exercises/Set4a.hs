@@ -65,8 +65,11 @@ distinct (x:xs) = if elem x xs then False else (distinct xs)
 --   middle 'b' 'a' 'c'  ==> 'b'
 --   middle 1 7 3        ==> 3
 
-middle = todo
-
+middle :: Ord a => a -> a -> a -> a
+middle x y z
+    | x > y = middle y x z
+    | y > z = middle x z y
+    | otherwise = y
 ------------------------------------------------------------------------------
 -- Ex 4: return the range of an input list, that is, the difference
 -- between the smallest and the largest element.
