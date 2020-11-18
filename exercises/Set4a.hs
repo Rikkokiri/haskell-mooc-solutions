@@ -101,10 +101,18 @@ rangeOf x = (head (reverse (sort x))) - (head (sort x))
 --   longest [[1,2,3],[4,5],[6]] ==> [1,2,3]
 --   longest ["bcd","def","ab"] ==> "bcd"
 
-longest = todo
+longest :: (Ord a) => [[a]] -> [a]
+longest = maximumBy sortLEN
 
+-- comparison :: (Ord b) => [b] -> [b] -> Ordering
+-- comparison (x:xs) (y:ys)
+--     | length xs > length ys = GT
+--     | length ys > length xs = LT
+--     | otherwise = compare x y
 
-comparison = sortBy (comparing length)
+sortLEN x y
+    = compare (length x) (length y)
+    <> flip compare (head x) (head y)
 
 ------------------------------------------------------------------------------
 -- Ex 6: Implement the function incrementKey, that takes a list of
