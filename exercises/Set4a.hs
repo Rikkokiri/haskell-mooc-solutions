@@ -104,12 +104,6 @@ rangeOf x = (head (reverse (sort x))) - (head (sort x))
 longest :: (Ord a) => [[a]] -> [a]
 longest = maximumBy sortLEN
 
--- comparison :: (Ord b) => [b] -> [b] -> Ordering
--- comparison (x:xs) (y:ys)
---     | length xs > length ys = GT
---     | length ys > length xs = LT
---     | otherwise = compare x y
-
 sortLEN x y
     = compare (length x) (length y)
     <> flip compare (head x) (head y)
@@ -128,8 +122,9 @@ sortLEN x y
 --   incrementKey True [(True,1),(False,3),(True,4)] ==> [(True,2),(False,3),(True,5)]
 --   incrementKey 'a' [('a',3.4)] ==> [('a',4.4)]
 
-incrementKey :: k -> [(k,v)] -> [(k,v)]
-incrementKey = todo
+incrementKey :: (Eq k, Num v) => k -> [(k,v)] -> [(k,v)]
+incrementKey key list = [if (k == key) then (k, v + 1) else (k, v) | (k, v) <- list]
+-- [(k, v+1) | (k, v) <- list, k == key]
 
 ------------------------------------------------------------------------------
 -- Ex 7: compute the average of a list of values of the Fractional
