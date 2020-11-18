@@ -139,7 +139,7 @@ incrementKey key list = [if (k == key) then (k, v + 1) else (k, v) | (k, v) <- l
 -- length to a Fractional
 
 average :: Fractional a => [a] -> a
-average xs = todo
+average xs = (foldr (+) 0 xs) / (fromIntegral (length xs))
 
 ------------------------------------------------------------------------------
 -- Ex 8: given a map from player name to score and two players, return
@@ -148,7 +148,7 @@ average xs = todo
 --
 -- If a player doesn't exist in the map, you can assume they have 0 points.
 --
--- Hint: Map.findWithDefault can make this simpler
+-- Hint: incrementKey can make this simpler
 --
 -- Examples:
 --   winner (Map.fromList [("Bob",3470),("Jane",2130),("Lisa",9448)]) "Jane" "Lisa"
@@ -157,7 +157,9 @@ average xs = todo
 --     ==> "Bob"
 
 winner :: Map.Map String Int -> String -> String -> String
-winner scores player1 player2 = todo
+winner scores player1 player2
+    | Map.findWithDefault 0 player1 scores < Map.findWithDefault 0 player2 scores = player2
+    | otherwise = player1
 
 ------------------------------------------------------------------------------
 -- Ex 9: compute how many times each value in the list occurs. Return
