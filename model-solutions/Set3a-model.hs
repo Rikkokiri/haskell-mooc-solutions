@@ -28,9 +28,9 @@ import Data.List
 --  maxBy head   [1,2,3] [4,5]  ==>  [4,5]
 
 maxBy :: (a -> Int) -> a -> a -> a
-maxBy measure a b = if (measure a > measure b)
-                    then a
-                    else b
+maxBy measure a b
+  | measure a > measure b = a
+  | otherwise             = b
 
 ------------------------------------------------------------------------------
 -- Ex 2: implement the function mapMaybe that takes a function and a
@@ -42,8 +42,8 @@ maxBy measure a b = if (measure a > measure b)
 --   mapMaybe length (Just "abc") ==> Just 3
 
 mapMaybe :: (a -> b) -> Maybe a -> Maybe b
-mapMaybe _ Nothing = Nothing
-mapMaybe f (Just n) = Just (f n)
+mapMaybe _ Nothing  = Nothing
+mapMaybe f (Just x) = Just (f x)
 
 ------------------------------------------------------------------------------
 -- Ex 3: implement the function mapMaybe2 that works like mapMaybe
@@ -57,9 +57,8 @@ mapMaybe f (Just n) = Just (f n)
 --   mapMaybe2 div (Just 6) Nothing   ==>  Nothing
 
 mapMaybe2 :: (a -> b -> c) -> Maybe a -> Maybe b -> Maybe c
-mapMaybe2 _ Nothing _ = Nothing
-mapMaybe2 _ _ Nothing = Nothing
 mapMaybe2 f (Just x) (Just y) = Just (f x y)
+mapMaybe2 _ _        _        = Nothing
 
 ------------------------------------------------------------------------------
 -- Ex 4: define the functions firstHalf and palindrome so that
@@ -82,13 +81,10 @@ palindromeHalfs :: [String] -> [String]
 palindromeHalfs xs = map firstHalf (filter palindrome xs)
 
 firstHalf :: String -> String
-firstHalf str = if even (length str)
-                then take half str
-                else take (half+1) str
-                    where half = div (length str) 2
+firstHalf s = take ((length s + 1) `div` 2) s
 
 palindrome :: String -> Bool
-palindrome xs = xs == reverse xs
+palindrome s = reverse s == s
 
 ------------------------------------------------------------------------------
 -- Ex 5: Implement a function capitalize that takes in a string and
@@ -106,10 +102,8 @@ palindrome xs = xs == reverse xs
 --   capitalize "goodbye cruel world" ==> "Goodbye Cruel World"
 
 capitalize :: String -> String
-capitalize str = unwords (map capitalizeFirst (words str) )
-
-capitalizeFirst :: String -> String
-capitalizeFirst (first:rest) = toUpper first : rest 
+capitalize = unwords . map capitalizeFirst . words
+  where capitalizeFirst (c:cs) = toUpper c : cs
 
 ------------------------------------------------------------------------------
 -- Ex 6: powers k max should return all the powers of k that are less
@@ -126,8 +120,7 @@ capitalizeFirst (first:rest) = toUpper first : rest
 --   * the function takeWhile
 
 powers :: Int -> Int -> [Int]
-powers k max = takeWhile (<= max) (map(k^) [0..max])
--- powers k max = filter (\x -> k^x <= max) [0..max]
+powers k max = takeWhile (<=max) $ map (k^) [0..max]
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement a functional while loop. While should be a function
@@ -150,9 +143,9 @@ powers k max = takeWhile (<= max) (map(k^) [0..max])
 --     ==> Avvt
 
 while :: (a->Bool) -> (a->a) -> a -> a
-while check update values =
-    if check values then while check update (update values)
-    else values
+while check update value
+  | not (check value) = value
+  | otherwise = while check update (update value)
 
 ------------------------------------------------------------------------------
 -- Ex 8: another version of a while loop. This time, the check
@@ -164,14 +157,15 @@ while check update values =
 -- a Right, the function should call `check` on the contents of the
 -- Right and so on.
 --
+-- Hint! You'll need a helper function to pattern match on the result of f.
+--
 -- Examples (see definition of step below):
 --   whileRight (step 100) 1   ==> 128
 --   whileRight (step 1000) 3  ==> 1536
 
 whileRight :: (a -> Either b a) -> a -> b
-whileRight f x = helper f (f x)
-    where helper f (Left v)   = v
-          helper f (Right v)  = whileRight f v  
+whileRight f x = case f x of Left y -> y
+                             Right x' -> whileRight f x'
 
 -- for the whileRight examples:
 -- step k x doubles x if it's less than k
@@ -190,7 +184,7 @@ step k x = if x<k then Right (2*x) else Left x
 -- Hint! This is a great use for list comprehensions
 
 joinToLength :: Int -> [String] -> [String]
-joinToLength n l = [x ++ y | x <- l, y <- l, length (x++y) == n]
+joinToLength i xs = [z | x <- xs, y <- xs, let z = x++y, length z == i]
 
 ------------------------------------------------------------------------------
 -- Ex 10: implement the operator +|+ that returns a list with the first
@@ -203,11 +197,9 @@ joinToLength n l = [x ++ y | x <- l, y <- l, length (x++y) == n]
 --   [1,2,3] +|+ [4,5,6]  ==> [1,4]
 --   [] +|+ [True]        ==> [True]
 --   [] +|+ []            ==> []
+
 (+|+) :: [a] -> [a] -> [a]
-[] +|+ []           = []
-[] +|+ (y:ys)       = [y]
-(x:xs) +|+ []       = [x]
-(x:xs) +|+ (y:ys)   = [x] ++ [y]
+xs +|+ ys = take 1 xs ++ take 1 ys
 
 ------------------------------------------------------------------------------
 -- Ex 11: remember the lectureParticipants example from Lecture 2? We
@@ -224,9 +216,12 @@ joinToLength n l = [x ++ y | x <- l, y <- l, length (x++y) == n]
 --   sumRights [Left "bad!", Left "missing"]         ==>  0
 
 sumRights :: [Either a Int] -> Int
-sumRights [] = 0
-sumRights (x:xs) = case x of Right y -> y + (sumRights xs)
-                             Left y -> 0 + (sumRights xs)
+sumRights (Left  _ : xs) = sumRights xs
+sumRights (Right i : xs) = i + sumRights xs
+sumRights []             = 0
+
+-- Answer to the challenge:
+-- sumRights = sum . map (either (const 0) id)
 
 ------------------------------------------------------------------------------
 -- Ex 12: recall the binary function composition operation
@@ -242,8 +237,8 @@ sumRights (x:xs) = case x of Right y -> y + (sumRights xs)
 --   multiCompose [(3*), (2^), (+1)] 0 ==> 6
 --   multiCompose [(+1), (2^), (3*)] 0 ==> 2
 
-multiCompose [] v = v 
-multiCompose fs v = foldr ($) v fs
+multiCompose :: [a -> a] -> a -> a
+multiCompose = foldr (.) id
 
 ------------------------------------------------------------------------------
 -- Ex 13: let's consider another way to compose multiple functions. Given
@@ -262,8 +257,11 @@ multiCompose fs v = foldr ($) v fs
 --   multiApp reverse [tail, take 2, reverse] "foo" ==> ["oof","fo","oo"]
 --   multiApp concat [take 3, reverse] "race" ==> "racecar"
 
-multiApp :: ([a] -> b) -> [(c -> a)] -> c -> b
-multiApp f gs x = f $ (map ($ x) gs)
+multiApp :: ([b] -> c) -> [a -> b] -> a -> c
+multiApp f gs x = f [g x | g <- gs]
+
+-- Answer to the challenge:
+-- multiApp f gs x = f $ (map ($x) gs)
 
 ------------------------------------------------------------------------------
 -- Ex 14: in this exercise you get to implement an interpreter for a
@@ -293,18 +291,16 @@ multiApp f gs x = f $ (map ($ x) gs)
 -- after this you can enter commands on separate lines and see the
 -- responses to them
 --
--- The suprise will only work if you generate the return list directly
--- using (:). If you build the list in an argument to a helper
--- function, the surprise won't work.
+-- Unfortunately the surprise might not work if you've implemented
+-- your interpreter correctly but weirdly :(
 
 interpreter :: [String] -> [String]
-interpreter commands = builder commands 0 0
-
-builder [] _ _ = []
-builder (c:cs) x y
-    | c == "up"     = builder cs x (y+1)
-    | c == "down"   = builder cs x (y-1)
-    | c == "left"   = builder cs (x-1) y
-    | c == "right"  = builder cs (x+1) y
-    | c == "printX" = show x : builder cs x y
-    | otherwise     = show y : builder cs x y
+interpreter commands = go 0 0 commands
+  where go x y ("up":commands) = go x (y+1) commands
+        go x y ("down":commands) = go x (y-1) commands
+        go x y ("left":commands) = go (x-1) y commands
+        go x y ("right":commands) = go (x+1) y commands
+        go x y ("printX":commands) = show x : go x y commands
+        go x y ("printY":commands) = show y : go x y commands
+        go x y []                  = []
+        go x y (_:commands)        = "BAD" : go x y commands
