@@ -62,13 +62,10 @@ data List a = Empty | LNode a (List a)
   deriving Show
 
 instance Eq a => Eq (List a) where
-  Empty         == LNode _ _     = False
   Empty         == Empty         = True
-  LNode _ Empty == Empty = False
   LNode a Empty == LNode b Empty =  a == b
   LNode a al    == LNode b bl    = (a == b && al == bl)
   _             == _            = False
-  -- LNode a al    == LNode b Empty = False
 
 ------------------------------------------------------------------------------
 -- Ex 5: below you'll find two datatypes, Egg and Milk. Implement a
