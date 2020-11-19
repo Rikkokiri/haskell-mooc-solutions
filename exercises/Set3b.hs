@@ -208,6 +208,3 @@ maybeMap f (x:xs) = helper f (f x) xs
     where helper f Nothing xs   = maybeMap f xs
           helper f (Just x) xs    = x : maybeMap f xs
                                 
-
-helper (Just i) = [i]
-helper Nothing = []

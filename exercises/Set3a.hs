@@ -150,7 +150,9 @@ powers k max = takeWhile (<= max) (map(k^) [0..max])
 --     ==> Avvt
 
 while :: (a->Bool) -> (a->a) -> a -> a
-while check update value = todo
+while check update values =
+    if check values then while check update (update values)
+    else values
 
 ------------------------------------------------------------------------------
 -- Ex 8: another version of a while loop. This time, the check
@@ -167,7 +169,9 @@ while check update value = todo
 --   whileRight (step 1000) 3  ==> 1536
 
 whileRight :: (a -> Either b a) -> a -> b
-whileRight f x = todo
+whileRight f x = helper f (f x)
+    where helper f (Left v)   = v
+          helper f (Right v)  = whileRight f v  
 
 -- for the whileRight examples:
 -- step k x doubles x if it's less than k
@@ -186,7 +190,7 @@ step k x = if x<k then Right (2*x) else Left x
 -- Hint! This is a great use for list comprehensions
 
 joinToLength :: Int -> [String] -> [String]
-joinToLength = todo
+joinToLength n l = [x ++ y | x <- l, y <- l, length (x++y) == n]
 
 ------------------------------------------------------------------------------
 -- Ex 10: implement the operator +|+ that returns a list with the first
