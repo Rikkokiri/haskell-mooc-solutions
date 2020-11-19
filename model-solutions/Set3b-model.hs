@@ -39,9 +39,8 @@ import Mooc.Todo
 --   buildList 7 0 3 ==> [3]
 
 buildList :: Int -> Int -> Int -> [Int]
-buildList _ 0 end = [end]
-buildList start n end = start : buildList start (n-1) end
-
+buildList start 0 end = [end]
+buildList start count end = start : buildList start (count-1) end
 
 ------------------------------------------------------------------------------
 -- Ex 2: given i, build the list of sums [1, 1+2, 1+2+3, .., 1+2+..+i]
@@ -51,13 +50,10 @@ buildList start n end = start : buildList start (n-1) end
 -- Ps. you'll probably need a recursive helper function
 
 sums :: Int -> [Int]
-sums i = seqSum 1 1 i
-
-seqSum :: Int -> Int -> Int -> [Int]
-seqSum cur s limit
-    | cur > limit = []
-    | otherwise = s : seqSum (cur+1) (s+cur+1) limit
-
+sums i = go 0 1
+  where go sum j
+          | j>i = []
+          | otherwise = (sum+j) : go (sum+j) (j+1)
 
 ------------------------------------------------------------------------------
 -- Ex 3: define a function mylast that returns the last value of the
@@ -71,9 +67,8 @@ seqSum cur s limit
 --   mylast 0 [1,2,3] ==> 3
 
 mylast :: a -> [a] -> a
-mylast def [] = def
-mylast def [x] = x
-mylast def (x:xs) = mylast def xs
+mylast def []     = def
+mylast _   (x:xs) = mylast x xs
 
 ------------------------------------------------------------------------------
 -- Ex 4: safe list indexing. Define a function indexDefault so that
@@ -94,12 +89,9 @@ mylast def (x:xs) = mylast def xs
 --   indexDefault ["a","b","c"] (-1) "d" ==> "d"
 
 indexDefault :: [a] -> Int -> a -> a
-indexDefault [x] 0 def = x
-indexDefault [x] _ def = def
-indexDefault (x:xs) i def
-    | i < 0 = def
-    | i == 0 = x
-    | otherwise = indexDefault xs (i-1) def
+indexDefault [] _ def = def
+indexDefault (x:xs) 0 def = x
+indexDefault (x:xs) i def = indexDefault xs (i-1) def
 
 ------------------------------------------------------------------------------
 -- Ex 5: define a function that checks if the given list is in
@@ -108,9 +100,11 @@ indexDefault (x:xs) i def
 -- Use pattern matching and recursion to iterate through the list.
 
 sorted :: [Int] -> Bool
-sorted [] = True
+sorted []  = True
 sorted [x] = True
-sorted (y:x:xs) = if y <= x then sorted (x:xs) else False
+sorted (x:y:xs)
+  | x>y       = False
+  | otherwise = sorted (y:xs)
 
 ------------------------------------------------------------------------------
 -- Ex 6: compute the partial sums of the given list like this:
@@ -122,9 +116,9 @@ sorted (y:x:xs) = if y <= x then sorted (x:xs) else False
 -- Use pattern matching and recursion (and the list constructors : and [])
 
 sumsOf :: [Int] -> [Int]
-sumsOf [] = []
-sumsOf [x] = [x]
-sumsOf (y:x:xs) = y : sumsOf (y+x:xs)
+sumsOf xs = go 0 xs
+  where go acc (x:xs) = (acc+x) : go (acc+x) xs
+        go _   [] = []
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement the function merge that merges two sorted lists of
@@ -137,11 +131,11 @@ sumsOf (y:x:xs) = y : sumsOf (y+x:xs)
 --   merge [1,1,6] [1,2]   ==> [1,1,1,2,6]
 
 merge :: [Int] -> [Int] -> [Int]
-merge [] x = x
-merge x [] = x
+merge [] ys = ys
+merge xs [] = xs
 merge (x:xs) (y:ys)
-    | y < x     = y : merge (x:xs) ys
-    | otherwise = x : merge xs (y:ys)
+  | x < y     = x : merge xs (y:ys)
+  | otherwise = y : merge (x:xs) ys
 
 ------------------------------------------------------------------------------
 -- Ex 8: define the function mymaximum that takes a list and a
@@ -162,8 +156,8 @@ merge (x:xs) (y:ys)
 mymaximum :: (a -> a -> Bool) -> a -> [a] -> a
 mymaximum bigger initial [] = initial
 mymaximum bigger initial (x:xs)
-    | bigger initial x  = mymaximum bigger initial xs
-    | otherwise         = mymaximum bigger x xs
+  | bigger x initial  = mymaximum bigger x xs
+  | otherwise         = mymaximum bigger initial xs
 
 ------------------------------------------------------------------------------
 -- Ex 9: define a version of map that takes a two-argument function
@@ -177,9 +171,8 @@ mymaximum bigger initial (x:xs)
 -- Use recursion and pattern matching. Do not use any library functions.
 
 map2 :: (a -> b -> c) -> [a] -> [b] -> [c]
-map2 f as [] = []
-map2 f [] bs = []
-map2 f (a:as) (b:bs) = f a b : map2 f as bs
+map2 f (a:as) (b:bs) = f a b:map2 f as bs
+map2 f _      _      = []
 
 ------------------------------------------------------------------------------
 -- Ex 10: implement the function maybeMap, which works a bit like a
@@ -203,11 +196,6 @@ map2 f (a:as) (b:bs) = f a b : map2 f as bs
 --   ==> []
 
 maybeMap :: (a -> Maybe b) -> [a] -> [b]
+maybeMap f (x:xs) = case f x of Just y -> y:maybeMap f xs
+                                Nothing -> maybeMap f xs
 maybeMap f [] = []
-maybeMap f (x:xs) = helper f (f x) xs
-    where helper f Nothing xs   = maybeMap f xs
-          helper f (Just x) xs    = x : maybeMap f xs
-                                
-
-helper (Just i) = [i]
-helper Nothing = []
