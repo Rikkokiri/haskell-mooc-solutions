@@ -114,7 +114,10 @@ mapTree f (Node v t1 t2) = Node (f v) (mapTree f t1) (mapTree f t2)
 --                 (Node 3 Empty Empty))
 
 cull :: Eq a => a -> Tree a -> Tree a
-cull val tree = todo
+cull val Empty = Empty
+cull val (Node v l r)
+  | val == v  = Empty
+  | otherwise = Node v (cull val l) (cull val r)
 
 ------------------------------------------------------------------------------
 -- Ex 7: check if a tree is ordered. A tree is ordered if:
@@ -156,7 +159,8 @@ cull val tree = todo
 --                     (Node 3 Empty Empty))   ==>   True
 
 isOrdered :: Ord a => Tree a -> Bool
-isOrdered = todo
+isOrdered Empty = True
+isOrdered (Node v l r) = allValues (<v) l && allValues (>v) r && isOrdered l && isOrdered r
 
 ------------------------------------------------------------------------------
 -- Ex 8: a path in a tree can be represented as a list of steps that
@@ -202,8 +206,8 @@ walk (StepR:xs) (Node v t1 t2) = walk xs t2
 set :: [Step] -> a -> Tree a -> Tree a
 set [] _ Empty = Empty
 set [] val (Node v t1 t2) = Node val t1 t2
-set (StepL:xs) val (Node v t1 t2) = Node v (set  xs val t1) t2
-set (StepR:xs) val (Node v t1 t2) = Node v t1 (set  xs val t2)
+set (StepL:xs) val (Node v t1 t2) = Node v (set xs val t1) t2
+set (StepR:xs) val (Node v t1 t2) = Node v t1 (set xs val t2)
 
 ------------------------------------------------------------------------------
 -- Ex 10: given a value and a tree, return a path that goes from the
@@ -219,4 +223,25 @@ set (StepR:xs) val (Node v t1 t2) = Node v t1 (set  xs val t2)
 --                    (Node 5 Empty Empty))                     ==>  Just [StepL,StepR]
 
 search :: Eq a => a -> Tree a -> Maybe [Step]
-search v tree = todo
+search = todo
+--  search v tree = preorder v tree []
+   
+-- preorder v (Node a Empty Empty) steps =
+--   if v == a then Just steps
+--   else Nothing
+-- preorder v (Node a l r) steps
+--   | v == a    = steps
+--   | otherwise = steps ++ [StepL] ++ (preorder v l steps) ++ [StepR] ++ (preorder v r steps)
+
+
+-- search v Empty = 
+-- search v (Node a l r)
+--   | v == a = []
+--  | otherwise 
+
+-- search v tree = go v tree []
+--   where go _ Empty _ = Nothing
+--         go v (Node a t1 t2) steps 
+--           | v == a    = Just steps
+--          | v < a     = go v t1 (StepL:steps)
+--           | otherwise = go v t2 (StepR:steps)
