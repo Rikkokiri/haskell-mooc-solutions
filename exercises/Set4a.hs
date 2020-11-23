@@ -205,17 +205,10 @@ freqs xs = Map.fromList (map (\x -> (head x, length x)) . group . sort $ xs)
 transfer :: String -> String -> Int -> Map.Map String Int -> Map.Map String Int
 transfer from to amount bank =
     if (Map.member from bank) && (Map.member to bank) && balance >= amount && amount >= 0
-    -- then foldr (\k mp -> Map.insert k 0 mp) bank [from, to]
     then foldr (\(k, f) mp -> Map.adjust f k mp) bank [(from, (\x -> x-amount)), (to, (\y -> y+amount))] 
---     then foldr (
---         where fs = [(\x -> x-amount), (\y -> y+amount)]
-    -- then Map.adjust (\x -> x-amount) from bank  
     else bank
         where balance = case Map.lookup from bank of Nothing -> 0
                                                      Just sum -> sum
-
-
--- https://stackoverflow.com/questions/56370313/changing-the-value-for-several-keys-in-a-map-in-haskell
 
 ------------------------------------------------------------------------------
 -- Ex 11: given an Array and two indices, swap the elements in the indices.
@@ -225,7 +218,7 @@ transfer from to amount bank =
 --         ==> array (1,4) [(1,"one"),(2,"three"),(3,"two"),(4,"four")]
 
 swap :: Ix i => i -> i -> Array i a -> Array i a
-swap i j arr = todo
+swap i j arr = arr // ([(i1, arr!j) | i1 <- [i]] ++ [(j1, arr!i) | j1 <- [j]])
 
 ------------------------------------------------------------------------------
 -- Ex 12: given an Array, find the index of the largest element. You
@@ -236,4 +229,10 @@ swap i j arr = todo
 -- Hint: check out Data.Array.indices or Data.Array.assocs
 
 maxIndex :: (Ix i, Ord a) => Array i a -> i
-maxIndex = todo
+maxIndex arr = maxIndex' (Data.Array.assocs arr)
+
+maxIndex' (x:xs) = fst (listMax x xs)
+    where listMax currMax [] = currMax
+          listMax (i, v) (y:ys)
+            | v < (snd y) = listMax y ys
+            | otherwise   = listMax (i, v) ys
