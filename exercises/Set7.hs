@@ -130,13 +130,15 @@ bake events = go Start events
 --   average (1.0 :| [2.0,3.0])  ==>  2.0
 
 average :: Fractional a => NonEmpty a -> a
-average = todo
+average (x :| []) = x
+average (x :| xs) = (foldr (+) x xs) / (fromIntegral (length (x:xs)))
 
 ------------------------------------------------------------------------------
 -- Ex 5: reverse a NonEmpty list.
 
 reverseNonEmpty :: NonEmpty a -> NonEmpty a
-reverseNonEmpty = todo
+reverseNonEmpty (x :| []) = (x :| [])
+reverseNonEmpty (x :| xs) = (last xs :| (tail $ reverse (x:xs)) )
 
 ------------------------------------------------------------------------------
 -- Ex 6: implement Semigroup instances for the Distance, Time and
@@ -148,6 +150,14 @@ reverseNonEmpty = todo
 -- velocity (Distance 50 <> Distance 10) (Time 1 <> Time 2)
 --    ==> Velocity 20
 
+instance Semigroup (Distance) where
+  Distance a <> Distance b = Distance (a + b)
+
+instance Semigroup (Time) where
+  Time a <> Time b = Time (a + b)
+
+instance Semigroup (Velocity) where
+  Velocity a <> Velocity b = Velocity (a + b)
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement a Monoid instance for the Set type from exercise 2.
@@ -157,6 +167,20 @@ reverseNonEmpty = todo
 --
 -- What are the class constraints for the instances?
 
+instance Ord a => Semigroup (Set a) where
+  -- Set a <> mempty = Set a
+  -- mempty <> Set b = Set b
+  Set a <> Set b = Set (union a b)
+    where union a [] = a
+          union a (x:xs) = if elem x a then union a xs else union (sort (a ++ [x])) xs
+  -- Set a <> Set b = foldr (\e (Set s) -> add e (Set s)) (emptySet) (b ++ a)
+  -- Set a <> Set b = 
+  {- Set a <> Set b = (union (Set a) (Set b))
+    where union (Set a) mempty = Set a
+          union (Set a) (Set (b:bs)) = union (add b (Set a)) bs -}
+
+instance Ord a => Monoid (Set a) where
+  mempty = emptySet
 
 ------------------------------------------------------------------------------
 -- Ex 8: below you'll find two different ways of representing
