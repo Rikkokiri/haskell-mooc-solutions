@@ -225,7 +225,12 @@ set (StepR:xs) val (Node v t1 t2) = Node v t1 (set xs val t2)
 search :: Eq a => a -> Tree a -> Maybe [Step]
 search = todo
 --  search v tree = preorder v tree []
-   
+
+-- findpath v Empty = []
+-- findpath v (Node a l r) = if v == a
+--  then []
+--   else [] findpath ()
+
 -- preorder v (Node a Empty Empty) steps =
 --   if v == a then Just steps
 --   else Nothing

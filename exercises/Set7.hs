@@ -230,7 +230,14 @@ data PasswordRequirement =
   deriving Show
 
 passwordAllowed :: String -> PasswordRequirement -> Bool
-passwordAllowed = todo
+passwordAllowed pw (MinimumLength l) = length pw >= l
+passwordAllowed pw (ContainsSome cs) = any (==True) (contains pw cs)
+passwordAllowed pw (DoesNotContain cs) = all (==False) (contains pw cs)
+passwordAllowed pw (And c1 c2) = (passwordAllowed pw c1) && (passwordAllowed pw c2)
+passwordAllowed pw (Or c1 c2) = (passwordAllowed pw c1) || (passwordAllowed pw c2)
+
+contains :: String -> String -> [Bool]
+contains word chars = map (\x -> flip elem word x) chars
 
 ------------------------------------------------------------------------------
 -- Ex 10: a DSL for simple arithmetic expressions with addition and

@@ -175,7 +175,7 @@ winner scores player1 player2
 --     ==> Map.fromList [(False,3),(True,1)]
 
 freqs :: (Eq a, Ord a) => [a] -> Map.Map a Int
-freqs xs = todo
+freqs xs = Map.fromList (map (\x -> (head x, length x)) . group . sort $ xs)
 
 ------------------------------------------------------------------------------
 -- Ex 10: recall the withdraw example from the course material. Write a
@@ -203,7 +203,19 @@ freqs xs = todo
 --     ==> fromList [("Bob",100),("Mike",50)]
 
 transfer :: String -> String -> Int -> Map.Map String Int -> Map.Map String Int
-transfer from to amount bank = todo
+transfer from to amount bank =
+    if (Map.member from bank) && (Map.member to bank) && balance >= amount && amount >= 0
+    -- then foldr (\k mp -> Map.insert k 0 mp) bank [from, to]
+    then foldr (\(k, f) mp -> Map.adjust f k mp) bank [(from, (\x -> x-amount)), (to, (\y -> y+amount))] 
+--     then foldr (
+--         where fs = [(\x -> x-amount), (\y -> y+amount)]
+    -- then Map.adjust (\x -> x-amount) from bank  
+    else bank
+        where balance = case Map.lookup from bank of Nothing -> 0
+                                                     Just sum -> sum
+
+
+-- https://stackoverflow.com/questions/56370313/changing-the-value-for-several-keys-in-a-map-in-haskell
 
 ------------------------------------------------------------------------------
 -- Ex 11: given an Array and two indices, swap the elements in the indices.
