@@ -49,15 +49,16 @@ data Set a = Set [a]
 
 -- emptySet is a set with no elements
 emptySet :: Set a
-emptySet = todo
+emptySet = Set []
 
 -- member tests if an element is in a set
 member :: Eq a => a -> Set a -> Bool
-member = todo
+member e (Set s) = elem e s
 
 -- add a member to a set
-add :: a -> Set a -> Set a
-add = todo
+add :: Ord a => a -> Set a -> Set a
+add e (Set s) = if member e (Set s) then (Set s)
+                else Set (sort (s ++ [e]))
 
 ------------------------------------------------------------------------------
 -- Ex 3: a state machine for baking a cake. The type Event represents
@@ -92,10 +93,26 @@ add = todo
 data Event = AddEggs | AddFlour | AddSugar | Mix | Bake
   deriving (Eq,Show)
 
-data State = Start | Error | Finished
+data State = Start | Error | Finished | ExpectDry | ExpectFlour | ExpectSugar | ExpectMix | ExpectBake
   deriving (Eq,Show)
 
-step = todo
+-- 1. Add eggs
+-- 2. Add flour or sugar
+-- 3. Mix
+-- 4. Bake
+-- Finished and still stay finished
+
+step :: State -> Event -> State
+step Start AddEggs = ExpectDry
+step ExpectDry AddFlour = ExpectSugar
+step ExpectDry AddSugar = ExpectFlour
+step ExpectSugar AddSugar = ExpectMix
+step ExpectFlour AddFlour = ExpectMix
+step ExpectMix Mix = ExpectBake
+step ExpectBake Bake = Finished
+step Finished _ = Finished
+step _ _ = Error
+
 
 -- do not edit this
 bake :: [Event] -> State
