@@ -265,17 +265,17 @@ fromList ((k,v):xs) = Pair k v (fromList xs)
 data Nat = Zero | PlusOne Nat
   deriving (Show,Eq)
 
+
+
 fromNat :: Nat -> Int
 fromNat Zero = 0
 fromNat (PlusOne x) = 1 + fromNat (x)
 
 toNat :: Int -> Maybe Nat
-toNat = todo
---toNat z
---    | z == 0 = Just Zero
---    | z == 1 = PlusOne(Zero)
---    | z > 0 = PlusOne((toNat (z-1)))
---    | otherwise = Nothing
+toNat z = if z < 0
+          then Nothing
+          else Just (toNat' z)
+  where toNat' x = if x == 0 then Zero else PlusOne(toNat' (x-1))
 
 ------------------------------------------------------------------------------
 -- Ex 12: While pleasingly simple in its definition, the Nat datatype is not
