@@ -1,6 +1,2 @@
-<<<<<<< HEAD
-resolver: lts-14.9
-=======
 resolver: lts-16.31
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 install-ghc: true

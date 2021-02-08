@@ -25,7 +25,10 @@ import Mooc.Todo
 -- Otherwise return "Ok."
 
 workload :: Int -> Int -> String
-workload nExercises hoursPerExercise = todo
+workload nExercises hoursPerExercise
+  | nExercises * hoursPerExercise > 100   = "Holy moly!"
+  | nExercises * hoursPerExercise < 10    = "Piece of cake!"
+  | otherwise                             = "Ok."
 
 ------------------------------------------------------------------------------
 -- Ex 2: Implement the function echo that builds a string like this:
@@ -38,7 +41,8 @@ workload nExercises hoursPerExercise = todo
 -- Hint: use recursion
 
 echo :: String -> String
-echo = todo
+echo s = echo' s
+  where echo' x:xs = x ++ ", " ++ echo' xs
 
 ------------------------------------------------------------------------------
 -- Ex 3: A country issues some banknotes. The banknotes have a serial

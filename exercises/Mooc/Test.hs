@@ -2,29 +2,19 @@
 
 module Mooc.Test where
 
-<<<<<<< HEAD
-import Control.Exception (evaluate,SomeException,fromException)
-import Control.Monad
-import Control.DeepSeq (deepseq)
-=======
 import Control.DeepSeq (deepseq)
 import Control.Exception (try,evaluate,SomeException,fromException,bracket,finally)
 import Control.Monad
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 import Data.Foldable
 import Data.Functor
 import Data.List
 import Data.Maybe
 import Data.Monoid
 import Data.Semigroup
-<<<<<<< HEAD
-import System.Environment
-=======
 import GHC.IO.Handle
 import System.Directory
 import System.Environment
 import System.IO
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 import System.Timeout
 import Test.QuickCheck
 import Test.QuickCheck.Monadic
@@ -54,14 +44,11 @@ hasElements expected actual = counterexample' ("  Expected elements (in any orde
                                                ++ "\n  Was: " ++ show actual)
                               (sort expected == sort actual)
 
-<<<<<<< HEAD
-=======
 hasElementsDuplicates expected actual =
   counterexample' ("  Expected elements (in any order, duplicates allowed): " ++ show expected
                     ++ "\n  Was: " ++ show actual)
   (nub (sort expected) == nub (sort actual))
 
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 was f actual = counterexample' ("  Was: "++show actual) (f actual)
 
 -- helpers
@@ -75,13 +62,10 @@ forAllShrink_ gen = forAllShrinkBlind gen shrink
 forAll_ :: Arbitrary a => (a -> Property) -> Property
 forAll_ = forAllShrink_ arbitrary
 
-<<<<<<< HEAD
-=======
 -- nondeterministic conjoin
 conjoin' :: Testable prop => [prop] -> Property
 conjoin' ps = property $ elements ps
 
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 -- timeouts for evaluation
 
 timedMillis = 500
@@ -92,8 +76,6 @@ timed val k = monadicIO $ do
     Nothing -> return $ counterexample' ("  didn't return in "++show timedMillis++"ms") $ False
     Just v -> return $ k v
 
-<<<<<<< HEAD
-=======
 -- exceptions
 
 eval :: a -> PropertyM IO (Either SomeException a)
@@ -159,7 +141,6 @@ checkResult k (_,val) = counterexample " Produced value:" $ k val
 
 check kOut kRes x = checkOutput kOut x .&&. checkResult kRes x
 
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 -- handling TODO excercises
 
 isTodo :: SomeException -> Bool
@@ -182,17 +163,10 @@ instance Monoid Outcome where
 
 quietArgs = stdArgs {chatty=False}
 
-<<<<<<< HEAD
-timeLimit = 10 * 1000 * 1000 -- 10 seconds in microseconds
-
-myCheck :: Testable prop => prop -> IO Outcome
-myCheck prop = quickCheckWithResult quietArgs (within timeLimit prop) >>= interpret
-=======
 globalTimeLimit = 10 * 1000 * 1000 -- 10 seconds in microseconds
 
 myCheck :: Testable prop => prop -> IO Outcome
 myCheck prop = quickCheckWithResult quietArgs (within globalTimeLimit prop) >>= interpret
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
   where interpret res
           | resultIsTodo res = return Todo
           | isSuccess res = return Pass
@@ -227,12 +201,9 @@ showFinal color outs = concatMap (showCheck color) outs ++ "\n" ++ show score ++
 
 type Test = (Int,String,[Property])
 
-<<<<<<< HEAD
-=======
 precondition :: Property -> [Test] -> [Test]
 precondition prop = map (\(i,n,ps) -> (i,n,prop:ps))
 
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 toJSON :: [(Int,String,Outcome)] -> String
 toJSON ts = "[" ++ intercalate "," (map f ts) ++ "]"
   where f (i,name,outcome) = "{\"number\":"++show i++",\"name\":"++show name++",\"outcome\":\""++show outcome++"\"}"
