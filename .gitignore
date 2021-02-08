@@ -1,6 +1,7 @@
 *~
 *.lock
 .stack-work
+<<<<<<< HEAD
 score.json
 
 style.css
@@ -8,3 +9,6 @@ img
 LICENSE
 README.md
 .DS_Store
+=======
+score.json
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de

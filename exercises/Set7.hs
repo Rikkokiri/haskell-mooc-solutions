@@ -26,11 +26,19 @@ data Velocity = Velocity Double
 
 -- velocity computes a velocity given a distance and a time
 velocity :: Distance -> Time -> Velocity
+<<<<<<< HEAD
 velocity (Distance d) (Time t) = Velocity (d / t)
 
 -- travel computes a distance given a velocity and a time
 travel :: Velocity -> Time -> Distance
 travel (Velocity v) (Time t) = Distance (v * t)
+=======
+velocity = todo
+
+-- travel computes a distance given a velocity and a time
+travel :: Velocity -> Time -> Distance
+travel = todo
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 2: let's implement a simple Set datatype. A Set is a list of
@@ -49,6 +57,7 @@ data Set a = Set [a]
 
 -- emptySet is a set with no elements
 emptySet :: Set a
+<<<<<<< HEAD
 emptySet = Set []
 
 -- member tests if an element is in a set
@@ -59,6 +68,17 @@ member e (Set s) = elem e s
 add :: Ord a => a -> Set a -> Set a
 add e (Set s) = if member e (Set s) then (Set s)
                 else Set (sort (s ++ [e]))
+=======
+emptySet = todo
+
+-- member tests if an element is in a set
+member :: Eq a => a -> Set a -> Bool
+member = todo
+
+-- add a member to a set
+add :: a -> Set a -> Set a
+add = todo
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 3: a state machine for baking a cake. The type Event represents
@@ -93,6 +113,7 @@ add e (Set s) = if member e (Set s) then (Set s)
 data Event = AddEggs | AddFlour | AddSugar | Mix | Bake
   deriving (Eq,Show)
 
+<<<<<<< HEAD
 data State = Start | Error | Finished | ExpectDry | ExpectFlour | ExpectSugar | ExpectMix | ExpectBake
   deriving (Eq,Show)
 
@@ -113,6 +134,12 @@ step ExpectBake Bake = Finished
 step Finished _ = Finished
 step _ _ = Error
 
+=======
+data State = Start | Error | Finished
+  deriving (Eq,Show)
+
+step = todo
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 -- do not edit this
 bake :: [Event] -> State
@@ -130,15 +157,23 @@ bake events = go Start events
 --   average (1.0 :| [2.0,3.0])  ==>  2.0
 
 average :: Fractional a => NonEmpty a -> a
+<<<<<<< HEAD
 average (x :| []) = x
 average (x :| xs) = (foldr (+) x xs) / (fromIntegral (length (x:xs)))
+=======
+average = todo
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 5: reverse a NonEmpty list.
 
 reverseNonEmpty :: NonEmpty a -> NonEmpty a
+<<<<<<< HEAD
 reverseNonEmpty (x :| []) = (x :| [])
 reverseNonEmpty (x :| xs) = (last xs :| (tail $ reverse (x:xs)) )
+=======
+reverseNonEmpty = todo
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 6: implement Semigroup instances for the Distance, Time and
@@ -150,6 +185,7 @@ reverseNonEmpty (x :| xs) = (last xs :| (tail $ reverse (x:xs)) )
 -- velocity (Distance 50 <> Distance 10) (Time 1 <> Time 2)
 --    ==> Velocity 20
 
+<<<<<<< HEAD
 instance Semigroup (Distance) where
   Distance a <> Distance b = Distance (a + b)
 
@@ -158,6 +194,8 @@ instance Semigroup (Time) where
 
 instance Semigroup (Velocity) where
   Velocity a <> Velocity b = Velocity (a + b)
+=======
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement a Monoid instance for the Set type from exercise 2.
@@ -167,6 +205,7 @@ instance Semigroup (Velocity) where
 --
 -- What are the class constraints for the instances?
 
+<<<<<<< HEAD
 instance Ord a => Semigroup (Set a) where
   -- Set a <> mempty = Set a
   -- mempty <> Set b = Set b
@@ -181,6 +220,8 @@ instance Ord a => Semigroup (Set a) where
 
 instance Ord a => Monoid (Set a) where
   mempty = emptySet
+=======
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 8: below you'll find two different ways of representing
@@ -203,23 +244,33 @@ instance Ord a => Monoid (Set a) where
 
 data Operation1 = Add1 Int Int
                 | Subtract1 Int Int
+<<<<<<< HEAD
                 | Multiply1 Int Int 
+=======
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
   deriving Show
 
 compute1 :: Operation1 -> Int
 compute1 (Add1 i j) = i+j
 compute1 (Subtract1 i j) = i-j
+<<<<<<< HEAD
 compute1 (Multiply1 i j) = i * j
 
 show1 :: Operation1 -> String
 show1 (Add1 i j) = show i ++ "+" ++ show j
 show1 (Subtract1 i j) = show i ++ "-" ++ show j
 show1 (Multiply1 i j) = show i ++ "*" ++ show j
+=======
+
+show1 :: Operation1 -> String
+show1 = todo
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 data Add2 = Add2 Int Int
   deriving Show
 data Subtract2 = Subtract2 Int Int
   deriving Show
+<<<<<<< HEAD
 data Multiply2 = Multiply2 Int Int
   deriving Show
 
@@ -238,6 +289,18 @@ instance Operation2 Subtract2 where
 instance Operation2 Multiply2 where
   compute2 (Multiply2 i j) = i*j
   show2 (Multiply2 i j) = show i ++ "*" ++ show j
+=======
+
+class Operation2 op where
+  compute2 :: op -> Int
+
+instance Operation2 Add2 where
+  compute2 (Add2 i j) = i+j
+
+instance Operation2 Subtract2 where
+  compute2 (Subtract2 i j) = i-j
+
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 9: validating passwords. Below you'll find a type
@@ -266,6 +329,7 @@ data PasswordRequirement =
   deriving Show
 
 passwordAllowed :: String -> PasswordRequirement -> Bool
+<<<<<<< HEAD
 passwordAllowed pw (MinimumLength l) = length pw >= l
 passwordAllowed pw (ContainsSome cs) = any (==True) (contains pw cs)
 passwordAllowed pw (DoesNotContain cs) = all (==False) (contains pw cs)
@@ -274,6 +338,9 @@ passwordAllowed pw (Or c1 c2) = (passwordAllowed pw c1) || (passwordAllowed pw c
 
 contains :: String -> String -> [Bool]
 contains word chars = map (\x -> flip elem word x) chars
+=======
+passwordAllowed = todo
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 10: a DSL for simple arithmetic expressions with addition and
@@ -295,6 +362,7 @@ contains word chars = map (\x -> flip elem word x) chars
 --     ==> "(3*(1+1))"
 --
 
+<<<<<<< HEAD
 data Arithmetic = Literal Integer
                 | Operation String Arithmetic Arithmetic
   deriving Show
@@ -313,3 +381,19 @@ evaluate (Operation "*" a b) = evaluate a * evaluate b
 render :: Arithmetic -> String
 render (Literal a) = show a
 render (Operation s a b) = "(" ++ render a ++ s ++ render b ++ ")"
+=======
+data Arithmetic = Todo
+  deriving Show
+
+literal :: Integer -> Arithmetic
+literal = todo
+
+operation :: String -> Arithmetic -> Arithmetic -> Arithmetic
+operation = todo
+
+evaluate :: Arithmetic -> Integer
+evaluate = todo
+
+render :: Arithmetic -> String
+render = todo
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de

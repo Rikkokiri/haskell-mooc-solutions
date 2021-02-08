@@ -26,7 +26,11 @@ tests = [(1,"buildList",[imports, ex1_buildList])
 
 -- -- -- -- -- --
 
+<<<<<<< HEAD
 imports = $(importsOnly "Set3b" ["GHC.Num", "GHC.Base", "GHC.Classes", "GHC.Types",
+=======
+imports = $(importsOnly "Set3b" ["GHC.Num", "GHC.Real", "GHC.Base", "GHC.Classes", "GHC.Types",
+>>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
                                  "Mooc.Todo", "Mooc.LimitedPrelude"])
 
 ex1_buildList = property $ do
