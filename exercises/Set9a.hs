@@ -41,8 +41,8 @@ workload nExercises hoursPerExercise
 -- Hint: use recursion
 
 echo :: String -> String
-echo s = echo' s
-  where echo' x:xs = x ++ ", " ++ echo' xs
+echo "" = ""
+echo (x:xs) = (x:xs) ++ ", " ++ echo xs
 
 ------------------------------------------------------------------------------
 -- Ex 3: A country issues some banknotes. The banknotes have a serial
@@ -55,7 +55,10 @@ echo s = echo' s
 -- are valid.
 
 countValid :: [String] -> Int
-countValid = todo
+countValid list = length (filter isValid list)
+
+isValid :: String -> Bool
+isValid s = (s !! 2 == s !! 4) || (s !! 3 == s !! 5)
 
 ------------------------------------------------------------------------------
 -- Ex 4: Find the first element that repeats two or more times _in a
@@ -67,7 +70,11 @@ countValid = todo
 --   repeated [1,2,1,2,3,3] ==> Just 3
 
 repeated :: Eq a => [a] -> Maybe a
-repeated = todo
+repeated [] = Nothing
+repeated [x] = Nothing
+repeated (x:xs)
+  | x == head xs    = Just x
+  | otherwise       = repeated xs
 
 ------------------------------------------------------------------------------
 -- Ex 5: A laboratory has been collecting measurements. Some of the
@@ -89,7 +96,11 @@ repeated = todo
 --     ==> Left "no data"
 
 sumSuccess :: [Either String Int] -> Either String Int
-sumSuccess = todo
+sumSuccess [] = Left "no data"
+
+-- isRight :: Either a b -> Bool
+-- isRight (Right _) = True
+-- isRight (Left _)  = False
 
 ------------------------------------------------------------------------------
 -- Ex 6: A combination lock can either be open or closed. The lock
@@ -111,30 +122,36 @@ sumSuccess = todo
 --   isOpen (open "0000" (lock (changeCode "0000" (open "1234" aLock)))) ==> True
 --   isOpen (open "1234" (lock (changeCode "0000" (open "1234" aLock)))) ==> False
 
-data Lock = LockUndefined
+data Lock = Open String | Closed String
   deriving Show
 
 -- aLock should be a locked lock with the code "1234"
 aLock :: Lock
-aLock = todo
+aLock = Closed "1234"
 
 -- isOpen returns True if the lock is open
 isOpen :: Lock -> Bool
-isOpen = todo
+isOpen (Open _) = True
+isOpen _        = False
 
 -- open tries to open the lock with the given code. If the code is
 -- wrong, nothing happens.
 open :: String -> Lock -> Lock
-open = todo
+open s (Open code)   = (Open code)
+open s (Closed code) 
+  | s == code = (Open code)
+  | otherwise = (Closed code)
 
 -- lock closes a lock. If the lock is already closed, nothing happens.
 lock :: Lock -> Lock
-lock = todo
+lock (Open s)   = (Closed s)
+lock (Closed s) = (Closed s)
 
 -- changeCode changes the code of an open lock. If the lock is closed,
 -- nothing happens.
 changeCode :: String -> Lock -> Lock
-changeCode = todo
+changeCode _ (Closed code) = (Closed code)
+changeCode s (Open _) = (Open s)
 
 ------------------------------------------------------------------------------
 -- Ex 7: Here's a type Text that just wraps a String. Implement an Eq
@@ -150,6 +167,11 @@ changeCode = todo
 data Text = Text String
   deriving Show
 
+instance Eq Text where
+  (Text a) == (Text b) = (removeWhSp a) == (removeWhSp b)
+
+removeWhSp :: String -> String
+removeWhSp xs = filter (\x -> x /= ' ' && x /= '\n') xs
 
 ------------------------------------------------------------------------------
 -- Ex 8: We can represent functions or mappings as lists of pairs.

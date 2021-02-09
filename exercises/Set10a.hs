@@ -15,7 +15,8 @@ import Mooc.Todo
 --   take 10 (doublify [0..])  ==>  [0,0,1,1,2,2,3,3,4,4]
 
 doublify :: [a] -> [a]
-doublify = todo
+doublify [] = []
+doublify (x:xs) = [x] ++ [x] ++ (doublify xs)
 
 ------------------------------------------------------------------------------
 -- Ex 2: Implement the function interleave that takes two lists and
@@ -36,7 +37,12 @@ doublify = todo
 --   take 10 (interleave [1..] (repeat 0)) ==> [1,0,2,0,3,0,4,0,5,0]
 
 interleave :: [a] -> [a] -> [a]
-interleave = todo
+interleave [] [] = []
+interleave [x] [] = [x]
+interleave [] [y] = [y]
+interleave [] (y:ys) = [y] ++ ys
+interleave (x:xs) [] = [x] ++ xs
+interleave (x:xs) (y:ys) = [x] ++ [y] ++ interleave xs ys
 
 ------------------------------------------------------------------------------
 -- Ex 3: Deal out cards. Given a list of cards (strings), and a list

@@ -88,12 +88,8 @@ genBad = do
   i <- choose (0,length g - 1)
   let pre = take i g
   x <- arbitrary `suchThat` (\x -> not (canFinish (pre++[x]) || finished (pre++[x])))
-<<<<<<< HEAD
-  return $ pre++[x]
-=======
   y <- arbitrary
   elements [pre++[x], pre++[x,y]]
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ex3_error = forAllBlind (genBad) $ \events ->
   $(testing [|bake events|]) (?==Error)

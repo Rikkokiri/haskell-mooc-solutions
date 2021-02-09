@@ -46,13 +46,9 @@ red = Color 255 0 0
 yellow :: Color
 yellow = Color 255 240 0
 
-<<<<<<< HEAD
--- A coordinate is two Ints, x and y.
-=======
 -- A coordinate is two Ints, x and y. In this project, the (0,0)
 -- coordinate is in the top left corner of the image. The x coordinate
 -- increases to the right, and the y coordinate increases down.
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 data Coord = Coord Int Int
 
@@ -72,15 +68,9 @@ solid color = Picture (\coord -> color)
 
 -- Here's a simple picture:
 examplePicture1 = Picture f
-<<<<<<< HEAD
-  where f (Coord x y) | abs (x+y) < 100 = pink
-                      | max x y < 200 = white
-                      | otherwise = black
-=======
   where f (Coord x y) | abs (x+y) < 100 = pink    -- top corner is pink
                       | max x y < 200 = white     -- surrounded by a white square
                       | otherwise = black         -- rest of the picture is black
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 
 -- In order to find out what our example picture looks like, here's a
@@ -120,11 +110,7 @@ getPixel :: Picture -> Int -> Int -> String
 getPixel (Picture f) x y = colorToHex (f (Coord x y))
 renderList :: Picture -> (Int,Int) -> (Int,Int) -> [[String]]
 renderList picture (minx,maxx) (miny,maxy) =
-<<<<<<< HEAD
-  [[getPixel picture x y | x <- [minx..maxx]] | y <- (reverse [miny..maxy])]
-=======
   [[getPixel picture x y | x <- [minx..maxx]] | y <- [miny..maxy]]
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 -- renderListExample evaluates to
 -- [["000000","000000","000000"],
@@ -139,7 +125,6 @@ renderListExample = renderList justADot (9,11) (9,11)
 -- Example:
 --   renderList dotAndLine (2,4) (3,9) ==>
 --     [["000000","000000","000000"],
-<<<<<<< HEAD
 --      ["ff69b4","ff69b4","ff69b4"],
 --      ["000000","000000","000000"],
 --      ["000000","000000","000000"],
@@ -152,17 +137,6 @@ dotAndLine = Picture f
   where f (Coord 3 4) = white
         f (Coord _ 8) = pink
         f _           = black
-=======
---      ["000000","ffffff","000000"],
---      ["000000","000000","000000"],
---      ["000000","000000","000000"],
---      ["000000","000000","000000"],
---      ["ff69b4","ff69b4","ff69b4"],
---      ["000000","000000","000000"]]
-
-dotAndLine :: Picture
-dotAndLine = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -185,32 +159,22 @@ dotAndLine = todo
 -- Examples:
 --   blendColor (Color 10 100 0) (Color 0 200 40)
 --     ==> Color 5 150 20
-<<<<<<< HEAD
-=======
 --   renderList (combine (\c1 c2 -> c1) (solid red) justADot) (9,11) (9,11)
 --     ==> [["ff0000","ff0000","ff0000"],
 --          ["ff0000","ff0000","ff0000"],
 --          ["ff0000","ff0000","ff0000"]]
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 --   renderList (combine blendColor (solid red) justADot) (9,11) (9,11)
 --     ==> [["7f0000","7f0000","7f0000"],
 --          ["7f0000","ff7f7f","7f0000"],
 --          ["7f0000","7f0000","7f0000"]]
 
 blendColor :: Color -> Color -> Color
-<<<<<<< HEAD
 blendColor (Color r g b) (Color p v s) = (Color (avg r p) (avg g v) (avg b s))
   where avg a b = div (a + b) 2
 
 combine :: (Color -> Color -> Color) -> Picture -> Picture -> Picture
 combine g (Picture p1) (Picture p2) = Picture f
   where f coord = g (p1 coord) (p2 coord)
-=======
-blendColor = todo
-
-combine :: (Color -> Color -> Color) -> Picture -> Picture -> Picture
-combine = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 
@@ -264,7 +228,6 @@ exampleCircle = fill red (circle 80 100 200)
 -- Example:
 --  renderList (fill white (rectangle 1 2 2 3)) (0,5) (0,5)
 --   ==> [["000000","000000","000000","000000","000000","000000"],
-<<<<<<< HEAD
 --        ["000000","ffffff","ffffff","000000","000000","000000"],
 --        ["000000","ffffff","ffffff","000000","000000","000000"],
 --        ["000000","ffffff","ffffff","000000","000000","000000"],
@@ -275,16 +238,6 @@ exampleCircle = fill red (circle 80 100 200)
 rectangle :: Int -> Int -> Int -> Int -> Shape
 rectangle x0 y0 w h = Shape f
   where f (Coord x y) = (x>=x0) && (x < x0+w) && (y>=y0) && (y<y0+h)
-=======
---        ["000000","000000","000000","000000","000000","000000"],
---        ["000000","ffffff","ffffff","000000","000000","000000"],
---        ["000000","ffffff","ffffff","000000","000000","000000"],
---        ["000000","ffffff","ffffff","000000","000000","000000"],
---        ["000000","000000","000000","000000","000000","000000"]]
-
-rectangle :: Int -> Int -> Int -> Int -> Shape
-rectangle x0 y0 w h = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -300,7 +253,6 @@ rectangle x0 y0 w h = todo
 -- shape.
 
 union :: Shape -> Shape -> Shape
-<<<<<<< HEAD
 union (Shape g) (Shape h) = Shape f
   where f coord = g coord || h coord
 
@@ -308,12 +260,6 @@ cut :: Shape -> Shape -> Shape
 cut (Shape g) (Shape h) = Shape f
   where f coord = g coord && not (h coord)
 
-=======
-union = todo
-
-cut :: Shape -> Shape -> Shape
-cut = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 ------------------------------------------------------------------------------
 
 -- Here's a snowman, built using union from circles and rectangles.
@@ -334,7 +280,6 @@ exampleSnowman = fill white snowman
 -- Implement the function paintSolid that takes a color and a shape,
 -- and draws them on top of an existing picture.
 --
-<<<<<<< HEAD
 -- Example: renderList (paintSolid pink (dot 10 11) justADot) (9,11) (9,11)
 --  [["000000","ff69b4","000000"],
 --   ["000000","ffffff","000000"],
@@ -345,16 +290,6 @@ paintSolid color (Shape g) (Picture b) = Picture f
   where f coord | g coord = color
                 | otherwise = b coord
 
-=======
--- Example: renderList (paintSolid pink (dot 10 11) justADot) (9,11) (9,12)
---   ==> [["000000","000000","000000"],
---        ["000000","ffffff","000000"],
---        ["000000","ff69b4","000000"],
---        ["000000","000000","000000"]]
-
-paintSolid :: Color -> Shape -> Picture -> Picture
-paintSolid color shape base = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 ------------------------------------------------------------------------------
 
 allWhite :: Picture
@@ -392,7 +327,6 @@ stripes a b = Picture f
 --
 -- Example:
 -- renderList (paint (stripes red white) (rectangle 0 0 2 4) (solid black)) (0,4) (0,4)
-<<<<<<< HEAD
 --  ==> [["000000","000000","000000","000000","000000"],
 --       ["ffffff","ffffff","000000","000000","000000"],
 --       ["ff0000","ff0000","000000","000000","000000"],
@@ -404,16 +338,6 @@ paint (Picture pat) (Shape g) (Picture b) = Picture f
   where f coord | g coord = pat coord
                 | otherwise = b coord
 
-=======
---  ==> [["ff0000","ff0000","000000","000000","000000"],
---       ["ffffff","ffffff","000000","000000","000000"],
---       ["ff0000","ff0000","000000","000000","000000"],
---       ["ffffff","ffffff","000000","000000","000000"],
---       ["000000","000000","000000","000000","000000"]]
-
-paint :: Picture -> Shape -> Picture -> Picture
-paint pat shape base = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 ------------------------------------------------------------------------------
 
 -- Here's a patterned version of the snowman example. See it by running:
@@ -431,15 +355,12 @@ examplePatterns = (paint (solid black) hat . paint (stripes red yellow) legs . p
 flipCoordXY :: Coord -> Coord
 flipCoordXY (Coord x y) = (Coord y x)
 
-<<<<<<< HEAD
 flipCoordX :: Coord -> Coord
 flipCoordX (Coord x y) = (Coord (-x) y)
 
 flipCoordY :: Coord -> Coord
 flipCoordY (Coord x y) = (Coord x (-y))
 
-=======
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 -- Flip a picture by switching x and y coordinates
 flipXY :: Picture -> Picture
 flipXY (Picture f) = Picture (f . flipCoordXY)
@@ -485,34 +406,22 @@ xy = Picture f
 data Fill = Fill Color
 
 instance Transform Fill where
-<<<<<<< HEAD
   apply (Fill color) (Picture b) = Picture (\x -> color)
-=======
-  apply = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 data Zoom = Zoom Int
   deriving Show
 
 instance Transform Zoom where
-<<<<<<< HEAD
   apply (Zoom scale) pic = zoom scale pic
-=======
-  apply = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 data Flip = FlipX | FlipY | FlipXY
   deriving Show
 
 instance Transform Flip where
-<<<<<<< HEAD
   apply FlipXY pic = flipXY pic
   apply FlipX (Picture f) = Picture (f . flipCoordX)
   apply FlipY (Picture f) = Picture (f . flipCoordY)
 
-=======
-  apply = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -527,14 +436,9 @@ instance Transform Flip where
 data Chain a b = Chain a b
   deriving Show
 
-<<<<<<< HEAD
 instance (Transform a, Transform b) => Transform (Chain a b) where
   apply (Chain t1 t2) pic = apply t1 (apply t2 pic)
 
-=======
-instance Transform (Chain a b) where
-  apply = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 ------------------------------------------------------------------------------
 
 -- Now we can redefine largeVerticalStripes using the above Transforms.
@@ -572,7 +476,6 @@ data Blur = Blur
   deriving Show
 
 instance Transform Blur where
-<<<<<<< HEAD
   apply Blur (Picture g) = Picture f
     where f (Coord x y) = avg [g (Coord x y), g (Coord (x-1) y), g (Coord (x+1) y), g(Coord x (y-1)), g(Coord x (y+1))]
       -- blendColor (g (Coord (x-1) y)) (g (Coord (x+1) y))
@@ -587,9 +490,6 @@ sumColors cs = foldr (\(Color r g b) (Color p v s) -> (Color (r+p) (g+v) (b+s)) 
 divide :: Color -> Int -> Color
 divide (Color r g b) i = (Color (div r i) (div g i) (div b i)) 
 
-=======
-  apply = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -607,12 +507,8 @@ data BlurMany = BlurMany Int
   deriving Show
 
 instance Transform BlurMany where
-<<<<<<< HEAD
   apply (BlurMany 0) pic = pic
   apply (BlurMany i) pic = apply (BlurMany (i-1)) (apply Blur pic)
-=======
-  apply = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 ------------------------------------------------------------------------------
 
 -- Here's a blurred version of our original snowman. See it by running

@@ -1,16 +1,9 @@
 {-# LANGUAGE TemplateHaskell, DeriveLift, StandaloneDeriving #-}
 
-<<<<<<< HEAD
-module Mooc.Th (testing, testing',
-                isDefined, withDefined, hasType, importsOnly, show',
-                reifyType, DataType(..), FieldType(..), Constructor(..),
-                withInstance, withInstance1, classContains, defineInstance)
-=======
 module Mooc.Th (testing, testing', timeLimit,
                 isDefined, withDefined, hasType, hasType', importsOnly, show',
                 reifyType, DataType(..), FieldType(..), Constructor(..),
                 withInstance, withInstance1, withInstances1, classContains, defineInstance)
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 where
 
 import Data.Char
@@ -67,8 +60,6 @@ hasType s qtyp = do
     then [|\k -> counterexample s (k $(varOrCon $ mkName s))|]
     else [|\k -> counterexample ("The type of '"++s++"'\n  Expected: "++expected++"\n  Was: "++actual) False|]
 
-<<<<<<< HEAD
-=======
 hasType' :: String -> String -> Q Exp
 hasType' s expected = do
   mt <- getType s
@@ -78,7 +69,6 @@ hasType' s expected = do
     then [|\k -> counterexample s (k $(varOrCon $ mkName s))|]
     else [|\k -> counterexample ("The type of '"++s++"'\n  Expected: "++expected++"\n  Was: "++actual) False|]
 
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 -- testing types
 
 data FieldType = SimpleType String | WeirdType
@@ -131,19 +121,6 @@ constructorName' c = case c of
 
 -- testing classes
 
-<<<<<<< HEAD
-withInstance :: String -> String -> Q Exp -> Q Exp
-withInstance cln typn val = do
-  cl <- lookupTypeName cln
-  typ <- lookupTypeName typn
-  case (cl,typ) of
-    (Nothing,_) -> [|\k -> counterexample ("Class "++cln++" not found") (property False)|]
-    (_,Nothing) -> [|\k -> counterexample ("Type "++typn++" not found") (property False)|]
-    (Just c, Just t) -> do b <- isInstance c [(ConT t)]
-                           if b
-                             then [|\k -> k $val|]
-                             else [|\k -> counterexample ("Type "++typn++" is not an instance of class "++cln) (property False)|]
-=======
 data Instance = Found | NotFound String String | NoClass String | NoType String
   deriving (Show, Eq)
 
@@ -167,7 +144,6 @@ withInstance cln typn val = do
     NoType typn -> [|\k -> counterexample ("Type "++typn++" not found") (property False)|]
     NotFound cln typn -> [|\k -> counterexample ("Type "++typn++" is not an instance of class "++cln) (property False)|]
     Found -> [|\k -> k $val|]
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 classContains :: String -> String -> Q Exp
 classContains cln varn = do
@@ -177,30 +153,13 @@ classContains cln varn = do
     Just cl -> do
       info <- reify cl
       case info of
-<<<<<<< HEAD
-        (ClassOpI _ _ parent) -> let pn = nameBase parent in [|counterexample ("Function "++varn++ "is in the wrong class!") (pn ?== cln)|]
-=======
         (ClassOpI _ _ parent) -> let pn = nameBase parent in [|counterexample ("Function "++varn++" is in the wrong class!") (pn ?== cln)|]
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
         _ -> [|counterexample ("Function "++varn++" is not a method of class "++cln) (property False)|]
 
 lookupConstructor :: String -> Q (Maybe Type)
 lookupConstructor "[]" = return (Just ListT)
 lookupConstructor x = (fmap.fmap) ConT $ lookupTypeName x
 
-<<<<<<< HEAD
-withInstance1 :: String -> String -> Q Exp -> Q Exp
-withInstance1 cln typn val = do
-  cl <- lookupTypeName cln
-  cons <- lookupConstructor typn
-  case (cl,cons) of
-    (Nothing,_) -> [|\k -> counterexample ("Class "++cln++" not found") (property False)|]
-    (_,Nothing) -> [|\k -> counterexample ("Type "++typn++" not found") (property False)|]
-    (Just c, Just t) -> do b <- isInstance c [(AppT t (VarT (mkName "a")))]
-                           if b
-                             then [|\k -> k $val|]
-                             else [|\k -> counterexample ("Type "++typn++" is not an instance of class "++cln) (property False)|]
-=======
 lookupInstance1 :: String -> String -> Q Instance
 lookupInstance1 cln typn = do
   cl <- lookupTypeName cln
@@ -230,7 +189,6 @@ withInstances1 cln typns val = do
     (NoType typn:_) -> [|\k -> counterexample ("Type "++typn++" not found") (property False)|]
     (NotFound cln typn:_) -> [|\k -> counterexample ("Type "++typn++" is not an instance of class "++cln) (property False)|]
     _ -> [|\k -> k $val|]
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 defineInstance :: String -> Name -> String -> Q Exp -> Q [Dec]
 defineInstance cln typn methodn body = do
@@ -246,10 +204,7 @@ data Call = Prefix Name [Exp] | Operator Name Exp Exp
 
 parseCall :: Exp -> Call
 parseCall (VarE name) = Prefix name []
-<<<<<<< HEAD
-=======
 parseCall (UnboundVarE name) = Prefix name []
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 parseCall (AppE f arg) = Prefix name (args ++ [arg])
   where Prefix name args = parseCall f
 parseCall (InfixE (Just l) (VarE op) (Just r)) = Operator op l r
@@ -277,10 +232,7 @@ unqualifyName (Name n _) = Name n NameS
 
 unqualify :: Exp -> Exp
 unqualify (VarE n) = VarE (unqualifyName n)
-<<<<<<< HEAD
-=======
 unqualify (UnboundVarE n) = UnboundVarE (unqualifyName n)
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 unqualify (ConE n) = ConE (unqualifyName n)
 unqualify (AppE f x) = AppE (unqualify f) (unqualify x)
 unqualify (InfixE mleft op mright) = InfixE (fmap unqualify mleft) (unqualify op) (fmap unqualify mright)
@@ -288,10 +240,7 @@ unqualify (UInfixE left op right) = UInfixE (unqualify left) (unqualify op) (unq
 unqualify (LitE l) = LitE l
 unqualify (TupE exps) = TupE (map unqualify exps)
 unqualify (ListE exps) = ListE (map unqualify exps)
-<<<<<<< HEAD
-=======
 unqualify (ArithSeqE (FromR x)) = ArithSeqE (FromR (unqualify x))
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 unqualify x = error $ "Unsupported: " ++ show x
 
 testing' :: Q Exp -> Q Exp

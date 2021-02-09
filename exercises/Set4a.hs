@@ -35,12 +35,8 @@ import Data.Array
 -- you remove the Eq a => constraint from the type!
 
 allEqual :: Eq a => [a] -> Bool
-<<<<<<< HEAD
 allEqual [] = True
 allEqual (x:xs) = all (== x) xs
-=======
-allEqual xs = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 2: implement the function distinct which returns True if all
@@ -55,12 +51,8 @@ allEqual xs = todo
 --   distinct [1,2] ==> True
 
 distinct :: Eq a => [a] -> Bool
-<<<<<<< HEAD
 distinct [] = True
 distinct (x:xs) = if elem x xs then False else (distinct xs)
-=======
-distinct = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 3: implement the function middle that returns the middle value
@@ -73,15 +65,11 @@ distinct = todo
 --   middle 'b' 'a' 'c'  ==> 'b'
 --   middle 1 7 3        ==> 3
 
-<<<<<<< HEAD
 middle :: Ord a => a -> a -> a -> a
 middle x y z
     | x > y = middle y x z
     | y > z = middle x z y
     | otherwise = y
-=======
-middle = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 4: return the range of an input list, that is, the difference
@@ -96,13 +84,8 @@ middle = todo
 --   rangeOf [4,2,1,3]          ==> 3
 --   rangeOf [1.5,1.0,1.1,1.2]  ==> 0.5
 
-<<<<<<< HEAD
 rangeOf :: (Ord a, Num a) => [a] -> a
 rangeOf x = (head (reverse (sort x))) - (head (sort x))
-=======
-rangeOf :: [a] -> a
-rangeOf = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 5: given a list of lists, return the longest list. If there
@@ -118,16 +101,12 @@ rangeOf = todo
 --   longest [[1,2,3],[4,5],[6]] ==> [1,2,3]
 --   longest ["bcd","def","ab"] ==> "bcd"
 
-<<<<<<< HEAD
 longest :: (Ord a) => [[a]] -> [a]
 longest = maximumBy sortLEN
 
 sortLEN x y
     = compare (length x) (length y)
     <> flip compare (head x) (head y)
-=======
-longest = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 6: Implement the function incrementKey, that takes a list of
@@ -143,14 +122,9 @@ longest = todo
 --   incrementKey True [(True,1),(False,3),(True,4)] ==> [(True,2),(False,3),(True,5)]
 --   incrementKey 'a' [('a',3.4)] ==> [('a',4.4)]
 
-<<<<<<< HEAD
 incrementKey :: (Eq k, Num v) => k -> [(k,v)] -> [(k,v)]
 incrementKey key list = [if (k == key) then (k, v + 1) else (k, v) | (k, v) <- list]
 -- [(k, v+1) | (k, v) <- list, k == key]
-=======
-incrementKey :: k -> [(k,v)] -> [(k,v)]
-incrementKey = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 7: compute the average of a list of values of the Fractional
@@ -165,11 +139,7 @@ incrementKey = todo
 -- length to a Fractional
 
 average :: Fractional a => [a] -> a
-<<<<<<< HEAD
 average xs = (foldr (+) 0 xs) / (fromIntegral (length xs))
-=======
-average xs = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 8: given a map from player name to score and two players, return
@@ -179,11 +149,8 @@ average xs = todo
 --
 -- If a player doesn't exist in the map, you can assume they have 0 points.
 --
-<<<<<<< HEAD
 -- Hint: incrementKey can make this simpler
-=======
 -- Hint: Map.findWithDefault can make this simpler
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 --
 -- Examples:
 --   winner (Map.fromList [("Bob",3470),("Jane",2130),("Lisa",9448)]) "Jane" "Lisa"
@@ -192,13 +159,9 @@ average xs = todo
 --     ==> "Lisa"
 
 winner :: Map.Map String Int -> String -> String -> String
-<<<<<<< HEAD
 winner scores player1 player2
     | Map.findWithDefault 0 player1 scores < Map.findWithDefault 0 player2 scores = player2
     | otherwise = player1
-=======
-winner scores player1 player2 = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 9: compute how many times each value in the list occurs. Return
@@ -213,11 +176,7 @@ winner scores player1 player2 = todo
 --     ==> Map.fromList [(False,3),(True,1)]
 
 freqs :: (Eq a, Ord a) => [a] -> Map.Map a Int
-<<<<<<< HEAD
 freqs xs = Map.fromList (map (\x -> (head x, length x)) . group . sort $ xs)
-=======
-freqs xs = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 10: recall the withdraw example from the course material. Write a
@@ -245,16 +204,12 @@ freqs xs = todo
 --     ==> fromList [("Bob",100),("Mike",50)]
 
 transfer :: String -> String -> Int -> Map.Map String Int -> Map.Map String Int
-<<<<<<< HEAD
 transfer from to amount bank =
     if (Map.member from bank) && (Map.member to bank) && balance >= amount && amount >= 0
     then foldr (\(k, f) mp -> Map.adjust f k mp) bank [(from, (\x -> x-amount)), (to, (\y -> y+amount))] 
     else bank
         where balance = case Map.lookup from bank of Nothing -> 0
                                                      Just sum -> sum
-=======
-transfer from to amount bank = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 11: given an Array and two indices, swap the elements in the indices.
@@ -264,11 +219,7 @@ transfer from to amount bank = todo
 --         ==> array (1,4) [(1,"one"),(2,"three"),(3,"two"),(4,"four")]
 
 swap :: Ix i => i -> i -> Array i a -> Array i a
-<<<<<<< HEAD
 swap i j arr = arr // ([(i1, arr!j) | i1 <- [i]] ++ [(j1, arr!i) | j1 <- [j]])
-=======
-swap i j arr = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 12: given an Array, find the index of the largest element. You
@@ -279,7 +230,6 @@ swap i j arr = todo
 -- Hint: check out Data.Array.indices or Data.Array.assocs
 
 maxIndex :: (Ix i, Ord a) => Array i a -> i
-<<<<<<< HEAD
 maxIndex arr = maxIndex' (Data.Array.assocs arr)
 
 maxIndex' (x:xs) = fst (listMax x xs)
@@ -287,6 +237,3 @@ maxIndex' (x:xs) = fst (listMax x xs)
           listMax (i, v) (y:ys)
             | v < (snd y) = listMax y ys
             | otherwise   = listMax (i, v) ys
-=======
-maxIndex = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de

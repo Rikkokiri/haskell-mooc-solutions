@@ -16,14 +16,10 @@ import Data.List
 -- Hint! pattern matching is your friend.
 
 binomial :: Integer -> Integer -> Integer
-<<<<<<< HEAD
 binomial n k
     | k == 0            = 1
     | n == 0 && k > 0   = 0
     | otherwise         = binomial (n-1) k + binomial (n-1) (k-1)
-=======
-binomial = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 2: implement the odd factorial function. Odd factorial is like
@@ -34,14 +30,10 @@ binomial = todo
 --   oddFactorial 6 ==> 5*3*1 ==> 15
 
 oddFactorial :: Integer -> Integer
-<<<<<<< HEAD
 oddFactorial n
     | n == 1 = 1
     | even n    = oddFactorial(n - 1)
     | otherwise = n * oddFactorial(n - 1)
-=======
-oddFactorial = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 3: implement the Euclidean Algorithm for finding the greatest
@@ -73,15 +65,11 @@ oddFactorial = todo
 -- * https://en.wikipedia.org/wiki/Euclidean_algorithm
 
 myGcd :: Integer -> Integer -> Integer
-<<<<<<< HEAD
 myGcd a b
     | a == 0       = b
     | b == 0       = a
     | a < b        = myGcd a (b-a)
     | otherwise    = myGcd (a-b) b
-=======
-myGcd = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 4: Implement the function leftpad which adds space characters
@@ -97,13 +85,9 @@ myGcd = todo
 -- * you can compute the length of a string with the length function
 
 leftpad :: String -> Int -> String
-<<<<<<< HEAD
 leftpad str len
     | (length str) == len   = str
     | otherwise             = leftpad (" "++str) len
-=======
-leftpad = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 5: let's make a countdown for a rocket! Given a number, you
@@ -119,16 +103,12 @@ leftpad = todo
 -- * you'll probably need a recursive helper function
 
 countdown :: Integer -> String
-<<<<<<< HEAD
 countdown n = countdown' n "Ready! "
 
 countdown' :: Integer -> String -> String
 countdown' n str = if (n == 0)
                    then str ++ "Liftoff!"
                    else countdown' (n-1) (str ++ show n ++ "... ")
-=======
-countdown = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 6: implement the function smallestDivisor that returns the
@@ -146,7 +126,6 @@ countdown = todo
 -- Hint: remember the mod function!
 
 smallestDivisor :: Integer -> Integer
-<<<<<<< HEAD
 smallestDivisor n
     | even n        = 2
     | n == 1        = 1
@@ -158,9 +137,6 @@ divisorHelper n i
     | i == n        = n
     | n `mod` i == 0  = i
     | otherwise     = divisorHelper n (i+2)
-=======
-smallestDivisor = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement a function isPrime that checks if the given number
@@ -169,7 +145,6 @@ smallestDivisor = todo
 -- Ps. 0 and 1 are not prime numbers
 
 isPrime :: Integer -> Bool
-<<<<<<< HEAD
 isPrime n = if (n < 2)
             then False
             else smallestDivisor n == n
@@ -179,9 +154,6 @@ isPrime n = if (n < 2)
 -- isPrime 0 = False
 -- isPrime 1 = False
 -- isPrime i = smallestDivisor i == i
-=======
-isPrime = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
 
 ------------------------------------------------------------------------------
 -- Ex 8: implement a function biggestPrimeAtMost that returns the
@@ -196,10 +168,6 @@ isPrime = todo
 --   biggestPrimeAtMost 10 ==> 7
 
 biggestPrimeAtMost :: Integer -> Integer
-<<<<<<< HEAD
 biggestPrimeAtMost n
     | isPrime n     = n
     | otherwise     = biggestPrimeAtMost (n-1)
-=======
-biggestPrimeAtMost = todo
->>>>>>> ff1d1666d936ef425ce22d8bfb575d18c68c59de
