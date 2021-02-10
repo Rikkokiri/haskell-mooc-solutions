@@ -97,10 +97,17 @@ repeated (x:xs)
 
 sumSuccess :: [Either String Int] -> Either String Int
 sumSuccess [] = Left "no data"
+sumSuccess ls = case sumRights ls of 0 -> Left "no data"
+                                     n -> Right n
 
--- isRight :: Either a b -> Bool
--- isRight (Right _) = True
--- isRight (Left _)  = False
+-- sumSuccess (Left _ : xs) = sumSuccess xs
+-- sumSuccess (Right i : xs) = (Right (i + sumSuccess xs))
+-- sumSuccess [Right i] = (Right i)
+
+sumRights :: [Either a Int] -> Int
+sumRights (Left  _ : xs) = sumRights xs
+sumRights (Right i : xs) = i + sumRights xs
+sumRights []             = 0
 
 ------------------------------------------------------------------------------
 -- Ex 6: A combination lock can either be open or closed. The lock
