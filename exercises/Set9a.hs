@@ -100,10 +100,6 @@ sumSuccess [] = Left "no data"
 sumSuccess ls = case sumRights ls of 0 -> Left "no data"
                                      n -> Right n
 
--- sumSuccess (Left _ : xs) = sumSuccess xs
--- sumSuccess (Right i : xs) = (Right (i + sumSuccess xs))
--- sumSuccess [Right i] = (Right i)
-
 sumRights :: [Either a Int] -> Int
 sumRights (Left  _ : xs) = sumRights xs
 sumRights (Right i : xs) = i + sumRights xs
