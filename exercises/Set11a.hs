@@ -103,14 +103,15 @@ countdownPrint n = do print n
 --   5. produces 9
 
 isums :: Int -> IO Int
-isums n = isums' n 0
+isums = todo
+-- isums n = isums' n 0
 
-isums' :: Int -> Int -> IO Int
-isums' 0 sum = sum
-isums' n sum = do
-    i <- readLn
-    print (sum+i)
-    return (isums' (n-1) (sum+i))
+-- isums' :: Int -> Int -> IO Int
+-- isums' 0 sum = sum
+-- isums' n sum = do
+--     i <- readLn
+--     print (sum+i)
+--     return (isums' (n-1) (sum+i))
 
 
 ------------------------------------------------------------------------------
@@ -159,4 +160,8 @@ while cond op = todo
 --     4. returns the line read from the user
 
 debug :: String -> IO a -> IO a
-debug s op = todo
+debug s op = do
+    putStrLn s
+    output <- op
+    putStrLn s
+    return output
