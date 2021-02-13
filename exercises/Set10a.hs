@@ -61,7 +61,7 @@ interleave (x:xs) (y:ys) = [x] ++ [y] ++ interleave xs ys
 -- Hint: remember the functions cycle and zip?
 
 deal :: [String] -> [String] -> [(String,String)]
-deal = todo
+deal players cards = zip cards (cycle players)
 
 ------------------------------------------------------------------------------
 -- Ex 4: Given two lists, xs and ys, and an element z, generate an
@@ -79,7 +79,7 @@ deal = todo
 --   take 10 (alternate [1,2] [3,4,5] 0) ==> [1,2,0,3,4,5,0,1,2,0]
 
 alternate :: [a] -> [a] -> a -> [a]
-alternate xs ys z = todo
+alternate xs ys z = cycle (xs ++ [z] ++ ys ++ [z])
 
 ------------------------------------------------------------------------------
 -- Ex 5: Check if the length of a list is at least n. Make sure your
@@ -121,7 +121,14 @@ chunks = todo
 --   ignorecase "abC" == ignoreCase "ABc"  ==>  True
 --   ignorecase "acC" == ignoreCase "ABc"  ==>  False
 
-data IgnoreCase = Todo
+newtype IgnoreCase = IgnoreCase String
+    deriving Show
+
+instance Eq IgnoreCase where
+    (IgnoreCase a) == (IgnoreCase b) = (map toLower a) == (map toLower b)
+
+ignorecase :: String -> IgnoreCase
+ignorecase s = IgnoreCase s
 
 ------------------------------------------------------------------------------
 -- Ex 8: Here's the Room type and some helper functions from the
