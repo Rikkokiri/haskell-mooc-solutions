@@ -99,21 +99,11 @@ sumSuccess :: [Either String Int] -> Either String Int
 sumSuccess [] = Left "no data"
 sumSuccess ls = case filterLeft ls of [] -> Left "no data"
                                       ls -> Right (foldr (+) 0 ls)
--- sumSuccess (x:xs) = case x of Left _ -> sumSuccess xs
-   --                           Right i -> (Right i) + sumSuccess xs
- 
--- sumSuccess ls = case sumRights ls of 0 -> Left "no data"
-                              --       n -> Right n
 
 filterLeft :: [Either a Int] -> [Int]
 filterLeft [] = []
 filterLeft (Left _ : xs) = filterLeft xs
 filterLeft (Right i : xs) = [i] ++ filterLeft xs
-
--- sumRights :: [Either a Int] -> Int
--- sumRights (Left  _ : xs) = sumRights xs
--- sumRights (Right i : xs) = i + sumRights xs
--- sumRights [Left _]       = 
 
 ------------------------------------------------------------------------------
 -- Ex 6: A combination lock can either be open or closed. The lock
