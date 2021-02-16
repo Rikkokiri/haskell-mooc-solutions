@@ -247,4 +247,11 @@ compose ((k,v):xs) list2 =
 type Permutation = [(Int,Int)]
 
 permute :: Permutation -> [a] -> [a]
-permute = todo
+permute per ls = map snd (sortBy (\(x,_) (y,_) -> compare x y) (permute' per ls))
+
+permute' [] _ = []
+permute' _ [] = []
+permute' ((from,to):xs) ls = 
+  case (lookup from (zip [0..] ls)) of
+    (Just elem) -> [(to, elem)] ++ permute' xs ls
+    _ -> [] ++ permute' xs ls
