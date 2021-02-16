@@ -97,13 +97,23 @@ repeated (x:xs)
 
 sumSuccess :: [Either String Int] -> Either String Int
 sumSuccess [] = Left "no data"
-sumSuccess ls = case sumRights ls of 0 -> Left "no data"
-                                     n -> Right n
+sumSuccess ls = case filterLeft ls of [] -> Left "no data"
+                                      ls -> Right (foldr (+) 0 ls)
+-- sumSuccess (x:xs) = case x of Left _ -> sumSuccess xs
+   --                           Right i -> (Right i) + sumSuccess xs
+ 
+-- sumSuccess ls = case sumRights ls of 0 -> Left "no data"
+                              --       n -> Right n
 
-sumRights :: [Either a Int] -> Int
-sumRights (Left  _ : xs) = sumRights xs
-sumRights (Right i : xs) = i + sumRights xs
-sumRights []             = 0
+filterLeft :: [Either a Int] -> [Int]
+filterLeft [] = []
+filterLeft (Left _ : xs) = filterLeft xs
+filterLeft (Right i : xs) = [i] ++ filterLeft xs
+
+-- sumRights :: [Either a Int] -> Int
+-- sumRights (Left  _ : xs) = sumRights xs
+-- sumRights (Right i : xs) = i + sumRights xs
+-- sumRights [Left _]       = 
 
 ------------------------------------------------------------------------------
 -- Ex 6: A combination lock can either be open or closed. The lock
@@ -204,7 +214,12 @@ removeWhSp xs = filter (\x -> x /= ' ' && x /= '\n') xs
 --       ==> [("a",1),("b",2)]
 
 compose :: (Eq a, Eq b) => [(a,b)] -> [(b,c)] -> [(a,c)]
-compose = todo
+compose [] _ = []
+compose _ [] = []
+compose ((k,v):xs) list2 =
+  case (lookup v list2) of
+    (Just list2value) -> [(k, list2value)] ++ compose xs list2
+    _ -> [] ++ compose xs list2
 
 ------------------------------------------------------------------------------
 -- Ex 9: Reorder a list using an [(Int,Int)] mapping.
