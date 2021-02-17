@@ -3,6 +3,7 @@ module Set9b where
 import Mooc.Todo
 
 import Data.List
+import Data.Array
 
 --------------------------------------------------------------------------------
 -- Ex 1: In this exercise set, we'll solve the N Queens problem step by step.
@@ -99,7 +100,14 @@ nextCol (i,j) = (i, j+1)
 -- takes O(n^3) time. Just ignore the previous sentence, if you're not familiar
 -- with the O-notation.)
 prettyPrint :: Size -> [Coord] -> String
-prettyPrint = todo
+prettyPrint size coord = unlines 
+                        $ map (map snd)                                 -- Take just the letter
+                        $ groupBy (\a b -> fst (fst a) == fst (fst b))  -- Group by row
+                        $ assocs                                        -- Convert back to list
+                        $ listArray ((1,1),(size,size)) (repeat '.') // map (\(row, col) -> ((row,col),'Q')) coord
+
+-- Useful functions:
+-- unlines
 
 --------------------------------------------------------------------------------
 -- Ex 3: The task in this exercise is to define the relations sameRow, sameCol,
@@ -188,7 +196,13 @@ type Candidate = Coord
 type Stack     = [Coord]
 
 danger :: Candidate -> Stack -> Bool
-danger = todo
+danger cand queens = any (\q -> inDanger cand q) queens
+    where inDanger c q
+            | sameRow c q       = True
+            | sameCol c q       = True
+            | sameDiag c q      = True
+            | sameAntidiag c q  = True
+            | otherwise         = False
 
 --------------------------------------------------------------------------------
 -- Ex 5: In this exercise, the task is to write a modified version of
