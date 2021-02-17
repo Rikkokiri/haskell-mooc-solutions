@@ -98,12 +98,18 @@ repeated (x:xs)
 sumSuccess :: [Either String Int] -> Either String Int
 sumSuccess [] = Left "no data"
 sumSuccess ls = case filterLeft ls of [] -> Left "no data"
-                                      ls -> Right (foldr (+) 0 ls)
+                                      ls -> Right (sum ls)
 
 filterLeft :: [Either a Int] -> [Int]
 filterLeft [] = []
 filterLeft (Left _ : xs) = filterLeft xs
 filterLeft (Right i : xs) = [i] ++ filterLeft xs
+
+-- Model solution was way better:
+sumSuccessModel :: [Either String Int] -> Either String Int
+sumSuccessModel es = let successes = [x | Right x <- es]
+                in case successes of [] -> Left "no data"
+                                     xs -> Right (sum xs)
 
 ------------------------------------------------------------------------------
 -- Ex 6: A combination lock can either be open or closed. The lock
