@@ -16,7 +16,7 @@ import Mooc.Todo
 
 doublify :: [a] -> [a]
 doublify [] = []
-doublify (x:xs) = [x] ++ [x] ++ (doublify xs)
+doublify (x:xs) = x:x:doublify xs
 
 ------------------------------------------------------------------------------
 -- Ex 2: Implement the function interleave that takes two lists and
@@ -37,12 +37,8 @@ doublify (x:xs) = [x] ++ [x] ++ (doublify xs)
 --   take 10 (interleave [1..] (repeat 0)) ==> [1,0,2,0,3,0,4,0,5,0]
 
 interleave :: [a] -> [a] -> [a]
-interleave [] [] = []
-interleave [x] [] = [x]
-interleave [] [y] = [y]
-interleave [] (y:ys) = [y] ++ ys
-interleave (x:xs) [] = [x] ++ xs
-interleave (x:xs) (y:ys) = [x] ++ [y] ++ interleave xs ys
+interleave (x:xs) ys = x:interleave ys xs
+interleave []     ys = ys
 
 ------------------------------------------------------------------------------
 -- Ex 3: Deal out cards. Given a list of cards (strings), and a list
@@ -79,7 +75,9 @@ deal players cards = zip cards (cycle players)
 --   take 10 (alternate [1,2] [3,4,5] 0) ==> [1,2,0,3,4,5,0,1,2,0]
 
 alternate :: [a] -> [a] -> a -> [a]
-alternate xs ys z = cycle (xs ++ [z] ++ ys ++ [z])
+alternate xs ys z = xs ++ z : alternate ys xs z
+-- OR
+alternate' xs ys z = cycle (xs++[z]++ys++[z])
 
 ------------------------------------------------------------------------------
 -- Ex 5: Check if the length of a list is at least n. Make sure your
@@ -91,9 +89,11 @@ alternate xs ys z = cycle (xs ++ [z] ++ ys ++ [z])
 --   lengthAtLeast 10 [0..]  ==> True
 
 lengthAtLeast :: Int -> [a] -> Bool
-lengthAtLeast 0 xs = True
+lengthAtLeast 0 _  = True
 lengthAtLeast n [] = False
 lengthAtLeast n (x:xs) = lengthAtLeast (n-1) xs
+-- OR
+lengthAtLeast' n xs = length (take n xs) == n
 
 ------------------------------------------------------------------------------
 -- Ex 6: The function chunks should take in a list, and a number n,
@@ -107,11 +107,10 @@ lengthAtLeast n (x:xs) = lengthAtLeast (n-1) xs
 --   take 4 (chunks 3 [0..]) ==> [[0,1,2],[1,2,3],[2,3,4],[3,4,5]]
 
 chunks :: Int -> [a] -> [[a]]
-chunks 0 _ = [[]]
-chunks _ [] = []
-chunks n (x:xs) = if lengthAtLeast n (x:xs)
-    then [take n (x:xs)] ++ chunks n xs
-    else []
+chunks k [] = []
+chunks k xs
+  | lengthAtLeast k xs = take k xs : chunks k (tail xs)
+  | otherwise = []
 
 ------------------------------------------------------------------------------
 -- Ex 7: Define a newtype called IgnoreCase, that wraps a value of
@@ -128,13 +127,12 @@ chunks n (x:xs) = if lengthAtLeast n (x:xs)
 --   ignorecase "acC" == ignoreCase "ABc"  ==>  False
 
 newtype IgnoreCase = IgnoreCase String
-    deriving Show
-
-instance Eq IgnoreCase where
-    (IgnoreCase a) == (IgnoreCase b) = (map toLower a) == (map toLower b)
 
 ignorecase :: String -> IgnoreCase
 ignorecase s = IgnoreCase s
+
+instance Eq IgnoreCase where
+  IgnoreCase s == IgnoreCase t   = map toLower s == map toLower t
 
 ------------------------------------------------------------------------------
 -- Ex 8: Here's the Room type and some helper functions from the
@@ -179,7 +177,6 @@ play room (d:ds) = case move room d of Nothing -> [describe room]
 
 maze :: Room
 maze = maze1
-    where
-        maze1 = Room "Maze" [("Left",maze2), ("Right",maze3)]
-        maze2 = Room "Deeper in the maze" [("Left",maze3), ("Right",maze1)]
-        maze3 = Room "Elsewhere in the maze" [("Left",maze1), ("Right",maze2)]
+  where maze1 = Room "Maze" [("Left",maze2),("Right",maze3)]
+        maze2 = Room "Deeper in the maze" [("Left",maze3),("Right",maze1)]
+        maze3 = Room "Elsewhere in the maze" [("Left",maze1),("Right",maze2)]
