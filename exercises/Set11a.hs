@@ -103,16 +103,13 @@ countdownPrint n = do print n
 --   5. produces 9
 
 isums :: Int -> IO Int
-isums = todo
--- isums n = isums' n 0
-
--- isums' :: Int -> Int -> IO Int
--- isums' 0 sum = sum
--- isums' n sum = do
---     i <- readLn
---     print (sum+i)
---     return (isums' (n-1) (sum+i))
-
+isums n = helper n 0
+    where helper 0 acc = return acc
+          helper m acc = do
+              i <- readLn
+              let sum = acc + i
+              print sum
+              helper (m - 1) sum
 
 ------------------------------------------------------------------------------
 -- Ex 8: when is a useful function, but its first argument has type
