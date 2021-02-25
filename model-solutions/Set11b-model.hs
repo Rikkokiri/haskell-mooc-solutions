@@ -20,7 +20,8 @@ import Mooc.Todo
 --   "xfoobarquux"
 
 appendAll :: IORef String -> [String] -> IO ()
-appendAll r xs = forM_ xs (\x -> modifyIORef r (++x))
+appendAll ref xs = forM_ xs app
+  where app x = modifyIORef ref (++x)
 
 ------------------------------------------------------------------------------
 -- Ex 2: Given two IORefs, swap the values stored in them.
@@ -35,10 +36,11 @@ appendAll r xs = forM_ xs (\x -> modifyIORef r (++x))
 --   "x"
 
 swapIORefs :: IORef a -> IORef a -> IO ()
-swapIORefs a b = do temp <- readIORef a
-                    temp2 <- readIORef b
-                    writeIORef a temp2
-                    writeIORef b temp
+swapIORefs ra rb = do
+  a <- readIORef ra
+  b <- readIORef rb
+  writeIORef ra b
+  writeIORef rb a
 
 ------------------------------------------------------------------------------
 -- Ex 3: sometimes one bumps into IO operations that return IO
@@ -64,9 +66,8 @@ swapIORefs a b = do temp <- readIORef a
 --        replicateM l getLine
 
 doubleCall :: IO (IO a) -> IO a
-doubleCall op = do first <- op
-                   second <- first
-                   return second
+doubleCall op = do op2 <- op
+                   op2
 
 ------------------------------------------------------------------------------
 -- Ex 4: implement the analogue of function composition (the (.)
@@ -85,9 +86,8 @@ doubleCall op = do first <- op
 --   3. return the result (of type b)
 
 compose :: (a -> IO b) -> (c -> IO a) -> c -> IO b
-compose op1 op2 c = do a_result <- op2 c
-                       b_result <- op1 a_result
-                       return b_result
+compose op1 op2 c = do a <- op2 c
+                       op1 a
 
 ------------------------------------------------------------------------------
 -- Ex 5: Implement the operation mkCounter that produces the IO operations
@@ -116,10 +116,10 @@ compose op1 op2 c = do a_result <- op2 c
 
 mkCounter :: IO (IO (), IO Int)
 mkCounter = do
-    r <- newIORef 0
-    let inc = do modifyIORef r (+1)
-    get <- return (readIORef r)
-    return (inc, get)
+  ref <- newIORef 0
+  let get = readIORef ref
+      inc = modifyIORef ref (+1)
+  return (inc,get)
 
 ------------------------------------------------------------------------------
 -- Ex 6: Reading lines from a file. The module System.IO defines
@@ -149,17 +149,15 @@ mkCounter = do
 --   ["module Set11b where","","import Control.Monad"]
 
 hFetchLines :: Handle -> IO [String]
-hFetchLines h = do
-    eof <- hIsEOF h
-    hFetchLines' h eof
-
-hFetchLines' :: Handle -> Bool -> IO [String]
-hFetchLines' h True = return []
-hFetchLines' h False = do
-    line <- hGetLine h
-    rest <- hFetchLines h
-    hClose h
-    return (line:rest)
+hFetchLines h = do end <- hIsEOF h
+                   if end
+                     then return []
+                     else do line <- hGetLine h
+                             lines <- hFetchLines h
+                             return (line:lines)
+-- OR
+hFetchLines' h = do contents <- hGetContents h
+                    return (lines contents)
 
 ------------------------------------------------------------------------------
 -- Ex 7: Given a Handle and a list of line indexes, produce the lines
@@ -172,9 +170,14 @@ hFetchLines' h False = do
 -- handle.
 
 hSelectLines :: Handle -> [Int] -> IO [String]
-hSelectLines h nums = do
-    allLines <- hFetchLines h
-    return [allLines !! (i-1) | i <- nums]
+hSelectLines h inds = do ls <- hFetchLines h
+                         return $ pick ls inds
+
+pick :: [a] -> [Int] -> [a]
+pick ls inds = let numbered = zip [1..] ls
+                   include (i,_) = elem i inds
+                   filtered = filter include numbered
+               in map snd filtered
 
 ------------------------------------------------------------------------------
 -- Ex 8: In this exercise we see how a program can be split into a
@@ -215,9 +218,12 @@ counter ("print",n) = (True,show n,n)
 counter ("quit",n)  = (False,"bye bye",n)
 
 interact' :: ((String,st) -> (Bool,String,st)) -> st -> IO st
-interact' f state = do 
-    input <- getLine
-    let (bool, str, newState) = f (input, state)
-    putStrLn str
-    if bool then interact' f newState
-    else return newState
+interact' f state = do
+  inp <- getLine
+  case f (inp,state) of
+    (True,  out, state') ->
+      do putStrLn out
+         interact' f state'
+    (False, out, state') ->
+      do putStrLn out
+         return state'
