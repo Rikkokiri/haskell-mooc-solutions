@@ -45,19 +45,26 @@ readNames s =
 -- (NB! There are obviously other corner cases like the inputs " " and
 -- "a b c", but you don't need to worry about those here)
 split :: String -> Maybe (String,String)
-split = todo
+split s
+  | length x == 2 = Just ((x !! 0),(x !! 1))
+  | otherwise             = Nothing
+    where x = words s
 
 -- checkNumber should take a pair of two strings and return them
 -- unchanged if they don't contain numbers. Otherwise Nothing is
 -- returned.
 checkNumber :: (String, String) -> Maybe (String, String)
-checkNumber = todo
+checkNumber (a, b)
+    | any isDigit a || any isDigit b = Nothing
+    | otherwise                      = Just (a, b)
 
 -- checkCapitals should take a pair of two strings and return them
 -- unchanged if both start with a capital letter. Otherwise Nothing is
 -- returned.
 checkCapitals :: (String, String) -> Maybe (String, String)
-checkCapitals (for,sur) = todo
+checkCapitals (for,sur)
+  | isUpper (for !! 0) && isUpper (sur !! 0) = Just (for,sur)
+  | otherwise                                = Nothing
 
 ------------------------------------------------------------------------------
 -- Ex 2: Given a list of players and their scores (as [(String,Int)]),
@@ -84,7 +91,12 @@ checkCapitals (for,sur) = todo
 --     ==> Just "a"
 
 winner :: [(String,Int)] -> String -> String -> Maybe String
-winner scores player1 player2 = todo
+winner scores player1 player2 = do
+  score1 <- lookup player1 scores
+  score2 <- lookup player2 scores
+  if score2 > score1
+  then (Just player2)
+  else Just player1
 
 ------------------------------------------------------------------------------
 -- Ex 3: given a list of indices and a list of values, return the sum
@@ -102,7 +114,26 @@ winner scores player1 player2 = todo
 --    Nothing
 
 selectSum :: Num a => [a] -> [Int] -> Maybe a
-selectSum xs is = todo
+selectSum xs is = sumMaybe 0 (test xs is) -- foldM (\i )
+  
+-- is >>= \i -> [(safeIndex xs i)]
+test xs is = is >>= \i -> [(safeIndex xs i)]
+
+sumMaybe :: Num a => a -> [Maybe a] -> Maybe a
+sumMaybe n [] = Just n
+sumMaybe n (Nothing:xs) = Nothing
+sumMaybe n ((Just x):xs) = sumMaybe (n+x) xs
+
+-- foldM (fmap . (+)) 0 
+-- safeIndex >>= 
+
+--  (Just x) >>= k      = k x
+--  Nothing  >>= _      = Nothing
+
+safeIndex :: [a] -> Int -> Maybe a
+safeIndex arr i
+  | i < length arr && i >= 0  = Just (arr !! i)
+  | otherwise                 = Nothing
 
 ------------------------------------------------------------------------------
 -- Ex 4: Here is the Logger monad from the course material. Implement
@@ -136,7 +167,8 @@ instance Applicative Logger where
   (<*>) = ap
 
 countAndLog :: Show a => (a -> Bool) -> [a] -> Logger Int
-countAndLog = todo
+countAndLog cond (x:xs) = todo
+  -- | cond x = msg (show x)
 
 ------------------------------------------------------------------------------
 -- Ex 5: You can find the Bank and BankOp code from the course
@@ -153,7 +185,10 @@ exampleBank :: Bank
 exampleBank = (Bank (Map.fromList [("harry",10),("cedric",7),("ginny",1)]))
 
 balance :: String -> BankOp Int
-balance accountName = todo
+balance accountName = BankOp (balanceOp accountName)
+
+balanceOp :: String -> Bank -> (Int,Bank)
+balanceOp accountName (Bank accounts) = ((Map.findWithDefault 0 accountName accounts), Bank accounts)
 
 ------------------------------------------------------------------------------
 -- Ex 6: Using the operations balance, withdrawOp and depositOp, and
@@ -172,6 +207,8 @@ balance accountName = todo
 
 rob :: String -> String -> BankOp ()
 rob from to = todo
+  -- depositOp from all
+  -- where (BankOp all) = balance from
 
 ------------------------------------------------------------------------------
 -- Ex 7: using the State monad, write the operation update that first
