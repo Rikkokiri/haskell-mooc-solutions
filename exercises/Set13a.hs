@@ -160,8 +160,12 @@ instance Applicative Logger where
   (<*>) = ap
 
 countAndLog :: Show a => (a -> Bool) -> [a] -> Logger Int
-countAndLog cond (x:xs) = todo
-  -- | cond x = msg (show x)
+countAndLog _  [] = return 0
+countAndLog cond (x:xs)
+    | cond x    = do msg (show x)
+                     count <- countAndLog cond xs
+                     return (1 + count)
+    | otherwise = countAndLog cond xs
 
 ------------------------------------------------------------------------------
 -- Ex 5: You can find the Bank and BankOp code from the course
