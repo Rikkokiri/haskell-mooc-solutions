@@ -114,21 +114,14 @@ winner scores player1 player2 = do
 --    Nothing
 
 selectSum :: Num a => [a] -> [Int] -> Maybe a
-selectSum xs is = sumMaybe 0 (test xs is) -- foldM (\i )
+selectSum xs is = sumMaybe 0 (is >>= \i -> [(safeIndex xs i)])
   
--- is >>= \i -> [(safeIndex xs i)]
-test xs is = is >>= \i -> [(safeIndex xs i)]
+-- TODO: Write a solution that better utilises >>=
 
 sumMaybe :: Num a => a -> [Maybe a] -> Maybe a
 sumMaybe n [] = Just n
 sumMaybe n (Nothing:xs) = Nothing
 sumMaybe n ((Just x):xs) = sumMaybe (n+x) xs
-
--- foldM (fmap . (+)) 0 
--- safeIndex >>= 
-
---  (Just x) >>= k      = k x
---  Nothing  >>= _      = Nothing
 
 safeIndex :: [a] -> Int -> Maybe a
 safeIndex arr i
