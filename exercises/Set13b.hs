@@ -39,7 +39,7 @@ test = do
   return (x<10)
 
 ifM :: Monad m => m Bool -> m a -> m a -> m a
-ifM opBool opThen opElse = todo
+ifM opBool opThen opElse = opBool >>= \x -> if x then opThen else opElse
 
 ------------------------------------------------------------------------------
 -- Ex 2: the standard library function Control.Monad.mapM defines a
@@ -81,7 +81,11 @@ perhapsIncrement True x = modify (+x)
 perhapsIncrement False _ = return ()
 
 mapM2 :: Monad m => (a -> b -> m c) -> [a] -> [b] -> m [c]
-mapM2 op xs ys = todo
+mapM2 _ _ [] = return []
+mapM2 _ [] _ = return []
+mapM2 op (x:xs) (y:ys) = do r <- op x y
+                            rs <- mapM2 op xs ys
+                            return (r:rs)
 
 ------------------------------------------------------------------------------
 -- Ex 3: Finding paths.
