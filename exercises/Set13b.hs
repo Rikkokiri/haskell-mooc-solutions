@@ -166,7 +166,12 @@ path maze place1 place2 = todo
 -- PS. The tests don't care about the order of results.
 
 findSum2 :: [Int] -> [Int] -> [(Int,Int,Int)]
-findSum2 ks ns = todo
+findSum2 ks ns = [(a,b,a+b) | a <- ks, b <- ks, elem (a+b) ns ]
+
+-- Solution with do-notation:
+-- findSum2 ks ns = do a <- ks
+--                     b <- ks
+--                    if (elem (a+b) ns) then [(a,b,a+b)] else []
 
 ------------------------------------------------------------------------------
 -- Ex 5: compute all possible sums of elements from the given
