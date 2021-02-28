@@ -6,7 +6,7 @@ import Control.Monad
 import Control.Monad.State
 import Data.Char
 import Data.List
-
+import Data.Maybe
 
 ------------------------------------------------------------------------------
 -- Ex 1: implement the function ifM, that takes three monadic
@@ -143,7 +143,11 @@ maze1 = [("Entry",["Pit","Corridor 1"])
 
 
 visit :: [(String,[String])] -> String -> State [String] ()
-visit maze place = todo
+visit maze place = do
+      st <- get
+      when (elem place st) $ do
+        return ()
+      put $ st ++ [place]
 
 -- Now you should be able to implement path using visit. If you run
 -- visit on a place using an empty state, you'll get a state that

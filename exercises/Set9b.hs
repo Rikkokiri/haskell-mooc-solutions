@@ -286,7 +286,7 @@ fixFirst n (x:xs)
     | otherwise                 = fixFirst n (nextCol x:xs)
 
 rowEnd :: Size -> Coord -> Bool
-rowEnd n (r,c) = n == c
+rowEnd n (r,c) = c >= n
 
 --------------------------------------------------------------------------------
 -- Ex 7: We need two helper functions for stack management.
@@ -381,7 +381,8 @@ backtrack (_:x:xs) = (y:xs)
 --     step 8 [(4,7),(7,5),(6,2),(8,1)] ==> [(5,1),(4,7),(7,5),(6,2),(8,1)]
 
 step :: Size -> Stack -> Stack
-step = todo
+step n s = case fixFirst n s of Just xs -> continue xs
+                                Nothing -> backtrack s
 
 --------------------------------------------------------------------------------
 -- Ex 9: Let's solve our puzzle! The function finish takes a partial
