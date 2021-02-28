@@ -193,16 +193,8 @@ findSum2 ks ns = [(a,b,a+b) | a <- ks, b <- ks, elem (a+b) ns ]
 
 allSums :: [Int] -> [Int]
 allSums xs = map sum (filterM (\n -> [True, False]) xs)
-  -- do perm <- filterM (\n -> [True, False]) xs
-     --            map sum perm
 
-
-                -- mapM_ (\x -> sum x)
-                -- map sum perm
-
---  Control.Monad.filterM (\n -> [True, False]) [1,2,3]
-
--- filterM (\n -> [True, False]) [1,2,3]
+-- filterM (\n -> [True, False]) is used to generate permutations
 
 ------------------------------------------------------------------------------
 -- Ex 6: the standard library defines the function
