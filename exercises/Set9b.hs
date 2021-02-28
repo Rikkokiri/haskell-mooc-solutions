@@ -281,12 +281,13 @@ prettyPrint2 = todo
 fixFirst :: Size -> Stack -> Maybe Stack
 fixFirst n [x] = Just [x]
 fixFirst n (x:xs)
+    | rowEnd n x = Nothing
     | not (danger x xs) = Just (x:xs)
     | danger x xs && rowEnd n x = Nothing
-    | otherwise                 = fixFirst n (nextCol x:xs)
+    | otherwise                 = fixFirst n ((nextCol x):xs)
 
 rowEnd :: Size -> Coord -> Bool
-rowEnd n (r,c) = c >= n
+rowEnd n (r,c) = c > n
 
 --------------------------------------------------------------------------------
 -- Ex 7: We need two helper functions for stack management.
@@ -397,7 +398,10 @@ step n s = case fixFirst n s of Just xs -> continue xs
 -- solve the n queens problem.
 
 finish :: Size -> Stack -> Stack
-finish = todo
+finish n s
+    | length st > n = tail st
+    | otherwise     = finish n st
+        where st = step n s 
 
 solve :: Size -> Stack
 solve n = finish n [(1,1)]
