@@ -45,26 +45,25 @@ readNames s =
 -- (NB! There are obviously other corner cases like the inputs " " and
 -- "a b c", but you don't need to worry about those here)
 split :: String -> Maybe (String,String)
-split s
-  | length x == 2 = Just ((x !! 0),(x !! 1))
-  | otherwise             = Nothing
-    where x = words s
+split s = case break (==' ') s of (a,' ':b) -> Just (a,b)
+                                  _         -> Nothing
 
 -- checkNumber should take a pair of two strings and return them
 -- unchanged if they don't contain numbers. Otherwise Nothing is
 -- returned.
 checkNumber :: (String, String) -> Maybe (String, String)
-checkNumber (a, b)
-    | any isDigit a || any isDigit b = Nothing
-    | otherwise                      = Just (a, b)
+checkNumber (for,sur) = if all notNumber for && all notNumber sur
+                        then Just (for,sur)
+                        else Nothing
+  where notNumber c = not $ elem c "0123456789"
 
 -- checkCapitals should take a pair of two strings and return them
 -- unchanged if both start with a capital letter. Otherwise Nothing is
 -- returned.
 checkCapitals :: (String, String) -> Maybe (String, String)
-checkCapitals (for,sur)
-  | isUpper (for !! 0) && isUpper (sur !! 0) = Just (for,sur)
-  | otherwise                                = Nothing
+checkCapitals (for,sur) = if isUpper (for!!0) && isUpper (sur!!0)
+                          then Just (for,sur)
+                          else Nothing
 
 ------------------------------------------------------------------------------
 -- Ex 2: Given a list of players and their scores (as [(String,Int)]),
@@ -94,9 +93,12 @@ winner :: [(String,Int)] -> String -> String -> Maybe String
 winner scores player1 player2 = do
   score1 <- lookup player1 scores
   score2 <- lookup player2 scores
-  if score2 > score1
-  then (Just player2)
-  else Just player1
+  return (if score2 > score1 then player2 else player1)
+-- OR
+winner' scores player1 player2 = do
+  lookup player1 scores ?>
+    (\score1 -> lookup player2 scores ?>
+      (\score2 -> Just (if score2 > score1 then player2 else player1)))
 
 ------------------------------------------------------------------------------
 -- Ex 3: given a list of indices and a list of values, return the sum
@@ -114,19 +116,12 @@ winner scores player1 player2 = do
 --    Nothing
 
 selectSum :: Num a => [a] -> [Int] -> Maybe a
-selectSum xs is = sumMaybe 0 (is >>= \i -> [(safeIndex xs i)])
-  
--- TODO: Write a solution that better utilises >>=
-
-sumMaybe :: Num a => a -> [Maybe a] -> Maybe a
-sumMaybe n [] = Just n
-sumMaybe n (Nothing:xs) = Nothing
-sumMaybe n ((Just x):xs) = sumMaybe (n+x) xs
+selectSum xs is = liftM sum $ mapM (safeIndex xs) is
 
 safeIndex :: [a] -> Int -> Maybe a
-safeIndex arr i
-  | i < length arr && i >= 0  = Just (arr !! i)
-  | otherwise                 = Nothing
+safeIndex [] _ = Nothing
+safeIndex (x:xs) 0 = Just x
+safeIndex (x:xs) n = safeIndex xs (n-1)
 
 ------------------------------------------------------------------------------
 -- Ex 4: Here is the Logger monad from the course material. Implement
@@ -160,12 +155,12 @@ instance Applicative Logger where
   (<*>) = ap
 
 countAndLog :: Show a => (a -> Bool) -> [a] -> Logger Int
-countAndLog _  [] = return 0
-countAndLog cond (x:xs)
-    | cond x    = do msg (show x)
-                     count <- countAndLog cond xs
-                     return (1 + count)
-    | otherwise = countAndLog cond xs
+countAndLog p [] = return 0
+countAndLog p (x:xs)
+  | p x = do msg (show x)
+             res <- countAndLog p xs
+             return (res+1)
+  | otherwise = countAndLog p xs
 
 ------------------------------------------------------------------------------
 -- Ex 5: You can find the Bank and BankOp code from the course
@@ -182,10 +177,8 @@ exampleBank :: Bank
 exampleBank = (Bank (Map.fromList [("harry",10),("cedric",7),("ginny",1)]))
 
 balance :: String -> BankOp Int
-balance accountName = BankOp (balanceOp accountName)
-
-balanceOp :: String -> Bank -> (Int,Bank)
-balanceOp accountName (Bank accounts) = ((Map.findWithDefault 0 accountName accounts), Bank accounts)
+balance accountName = BankOp query
+  where query (Bank accounts) = (Map.findWithDefault 0 accountName accounts, Bank accounts)
 
 ------------------------------------------------------------------------------
 -- Ex 6: Using the operations balance, withdrawOp and depositOp, and
@@ -204,11 +197,11 @@ balanceOp accountName (Bank accounts) = ((Map.findWithDefault 0 accountName acco
 
 rob :: String -> String -> BankOp ()
 rob from to =
-    balance from
-    +>
-    withdrawOp from
-    +>
-    depositOp to
+  balance from
+  +>
+  withdrawOp from
+  +>
+  depositOp to
 
 ------------------------------------------------------------------------------
 -- Ex 7: using the State monad, write the operation update that first
@@ -220,8 +213,10 @@ rob from to =
 --    ==> ((),7)
 
 update :: State Int ()
-update = do old <- get
-            put (2 * old + 1)
+update = do x <- get
+            put (2*x)
+            y <- get
+            put (y+1)
 
 ------------------------------------------------------------------------------
 -- Ex 8: Checking that parentheses are balanced with the State monad.
@@ -249,12 +244,11 @@ update = do old <- get
 --   parensMatch "(()))("      ==> False
 
 paren :: Char -> State Int ()
-paren '(' = do old <- get
-               if old <= -1 then put (-1)
-               else put (old+1)
-paren ')' = do old <- get
-               if old <= -1 then put (-1)
-               else put(old-1)
+paren c = do
+  s <- get
+  when (s>=0) (case c of '(' -> put (s+1)
+                         ')' -> put (s-1)
+                         _ -> return ())
 
 parensMatch :: String -> Bool
 parensMatch s = count == 0
@@ -285,14 +279,11 @@ parensMatch s = count == 0
 -- PS. The order of the list of pairs doesn't matter
 
 count :: Eq a => a -> State [(a,Int)] ()
-count x = do modify (\st -> updateCount x st)
-
-updateCount :: Eq a => a -> [(a,Int)] -> [(a,Int)]
-updateCount x [] = [(x,1)]
-updateCount x ((y,c):ys)
-  | x == y    = [(y,c+1)] ++ ys
-  | otherwise = [(y,c)] ++ updateCount x ys
-
+count x = modify (inc x)
+  where inc x [] = [(x,1)]
+        inc x ((y,k):ys)
+          | x == y    = (y,k+1):ys
+          | otherwise = (y,k):inc x ys
 
 ------------------------------------------------------------------------------
 -- Ex 10: Implement the operation occurrences, which
@@ -314,9 +305,7 @@ updateCount x ((y,c):ys)
 --    ==> (4,[(2,1),(3,1),(4,1),(7,1)])
 
 occurrences :: (Eq a) => [a] -> State [(a,Int)] Int
-occurrences [] = do st <- get
-                    return (length st)
-occurrences (x:xs) = do
-              count x
-              occurrences xs                   
-              
+occurrences xs = do
+  mapM_ count xs
+  counts <- get
+  return (length counts)
