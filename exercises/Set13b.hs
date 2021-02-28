@@ -192,7 +192,7 @@ findSum2 ks ns = [(a,b,a+b) | a <- ks, b <- ks, elem (a+b) ns ]
 --     ==> [7,3,5,1,6,2,4,0]
 
 allSums :: [Int] -> [Int]
-allSums xs = todo
+allSums xs = map sum (filterM (\n -> [True, False]) xs)
   -- do perm <- filterM (\n -> [True, False]) xs
      --            map sum perm
 
