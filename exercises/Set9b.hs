@@ -99,6 +99,7 @@ nextCol (i,j) = (i, j+1)
 -- of the width (or height) n of the chess board; the naïve solution with elem
 -- takes O(n^3) time. Just ignore the previous sentence, if you're not familiar
 -- with the O-notation.)
+
 prettyPrint :: Size -> [Coord] -> String
 prettyPrint size coord = unlines 
                         $ map (map snd)                                 -- Take just the letter
@@ -278,7 +279,14 @@ prettyPrint2 = todo
 --     Q#######
 
 fixFirst :: Size -> Stack -> Maybe Stack
-fixFirst n s = todo
+fixFirst n [x] = Just [x]
+fixFirst n (x:xs)
+    | not (danger x xs) = Just (x:xs)
+    | danger x xs && rowEnd n x = Nothing
+    | otherwise                 = fixFirst n (nextCol x:xs)
+
+rowEnd :: Size -> Coord -> Bool
+rowEnd n (r,c) = n == c
 
 --------------------------------------------------------------------------------
 -- Ex 7: We need two helper functions for stack management.
@@ -300,10 +308,12 @@ fixFirst n s = todo
 -- Hint: Remember nextRow and nextCol? Use them!
 
 continue :: Stack -> Stack
-continue s = todo
+continue (x:xs) = (y:x:xs)
+    where y = nextRow x
 
 backtrack :: Stack -> Stack
-backtrack s = todo
+backtrack (_:x:xs) = (y:xs)
+    where y = nextCol x
 
 --------------------------------------------------------------------------------
 -- Ex 8: Let's take a step. Our algorithm solves the problem (in a
