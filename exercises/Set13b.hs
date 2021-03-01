@@ -145,16 +145,20 @@ maze1 = [("Entry",["Pit","Corridor 1"])
 visit :: [(String,[String])] -> String -> State [String] ()
 visit maze place = do
       st <- get
-      when (elem place st) $ do
-        return ()
-      put $ st ++ [place]
+      if elem place st then return ()
+      else do
+        put $ place:st
+        let neighbours = fromJust (lookup place maze)
+        mapM_ (\n -> visit maze n) neighbours
+      
 
 -- Now you should be able to implement path using visit. If you run
 -- visit on a place using an empty state, you'll get a state that
 -- lists all the places that are reachable from the starting place.
 
 path :: [(String,[String])] -> String -> String -> Bool
-path maze place1 place2 = todo
+path maze place1 place2 = elem place2 reachable
+    where (_,reachable) = runState (visit maze place1) []
 
 ------------------------------------------------------------------------------
 -- Ex 4: Given two lists, ks and ns, find numbers i and j from ks,
@@ -336,7 +340,11 @@ modifySL f = SL (\s -> ((),f s,[]))
 
 instance Functor SL where
   -- implement fmap
-  fmap = todo
+  -- fmap = liftM 
+  fmap f (SL a) = SL $ \s -> let (x,s',l) = a s in (f x,s',l)
+
+-- fmap f (State fs) = State $ \s -> let (s', res) = fs s
+--                                    in (s', f res)
 
 -- This is an Applicative instance that works for any monad, you
 -- can just ignore it for now. We'll get back to Applicative later.
@@ -346,5 +354,19 @@ instance Applicative SL where
 
 instance Monad SL where
   -- implement return and >>=
-  return = todo
-  (>>=) = todo
+  return a = SL $ \s -> (a,s,[])
+  -- (>>=) = todo
+  (SL x) >>= f = todo -- SL $ \s -> let (v,s',l++) = x s in runSL (f v) s'
+      
+    -- let (v,s',l) = x s in runSL (f v) s' 
+                                
+
+  -- (SL x) >>= f = SL $ \s -> let (v,newState,log) = x s in runSL (f a) s' l'
+
+
+-- (State x) >>= f = State $ \s -> let (v,s') = x s in runState (f v) s'
+
+
+--     (State h) >>= f = State $ \s -> let (a, newState) = h s  
+--                                        (State g) = f a  
+--                                    in  g newState  
