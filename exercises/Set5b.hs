@@ -223,8 +223,36 @@ set (StepR:xs) val (Node v t1 t2) = Node v t1 (set xs val t2)
 --                    (Node 5 Empty Empty))                     ==>  Just [StepL,StepR]
 
 search :: Eq a => a -> Tree a -> Maybe [Step]
-search = todo
+search v tree = path v tree []
+
+
+-- path :: Eq a => a -> Tree a -> [Step] -> Maybe [Step]
+path v Empty _ = Nothing
+path v (Node a l r) steps
+  | v == a    = Just steps
+  | otherwise = case path v l (steps ++ [StepL]) of
+      Just p  -> Just p
+      Nothing -> path v r (steps ++ [StepR]) 
+
+
+    
+    -- | otherwise = path v l (steps ++ [StepL]) ++ path v r (steps ++ [StepR])
+      -- Just (findLeft ++ findRight) where
+      -- findLeft  = 
+      -- findRight = path v r (steps ++ [StepR])
+
+-- path v (Node a Empty Empty) steps = if v == a then Just steps else Nothing
+-- search v tree = case findPath v [] tree of [] -> Nothing
+--                                            xs -> Just xs
 --  search v tree = preorder v tree []
+
+-- findPath :: Eq a => a -> Tree a -> [Step]
+findPath v steps Empty = []
+findPath v steps (Node a l r)
+  | v == a           = steps
+  | searchLeft /= [] = searchLeft
+  | otherwise        = findPath v (steps ++ [StepR]) r 
+      where searchLeft = findPath v (steps ++ [StepL]) l 
 
 -- findpath v Empty = []
 -- findpath v (Node a l r) = if v == a
