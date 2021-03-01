@@ -225,56 +225,10 @@ set (StepR:xs) val (Node v t1 t2) = Node v t1 (set xs val t2)
 search :: Eq a => a -> Tree a -> Maybe [Step]
 search v tree = path v tree []
 
-
--- path :: Eq a => a -> Tree a -> [Step] -> Maybe [Step]
+path :: Eq a => a -> Tree a -> [Step] -> Maybe [Step]
 path v Empty _ = Nothing
 path v (Node a l r) steps
   | v == a    = Just steps
   | otherwise = case path v l (steps ++ [StepL]) of
       Just p  -> Just p
       Nothing -> path v r (steps ++ [StepR]) 
-
-
-    
-    -- | otherwise = path v l (steps ++ [StepL]) ++ path v r (steps ++ [StepR])
-      -- Just (findLeft ++ findRight) where
-      -- findLeft  = 
-      -- findRight = path v r (steps ++ [StepR])
-
--- path v (Node a Empty Empty) steps = if v == a then Just steps else Nothing
--- search v tree = case findPath v [] tree of [] -> Nothing
---                                            xs -> Just xs
---  search v tree = preorder v tree []
-
--- findPath :: Eq a => a -> Tree a -> [Step]
-findPath v steps Empty = []
-findPath v steps (Node a l r)
-  | v == a           = steps
-  | searchLeft /= [] = searchLeft
-  | otherwise        = findPath v (steps ++ [StepR]) r 
-      where searchLeft = findPath v (steps ++ [StepL]) l 
-
--- findpath v Empty = []
--- findpath v (Node a l r) = if v == a
---  then []
---   else [] findpath ()
-
--- preorder v (Node a Empty Empty) steps =
---   if v == a then Just steps
---   else Nothing
--- preorder v (Node a l r) steps
---   | v == a    = steps
---   | otherwise = steps ++ [StepL] ++ (preorder v l steps) ++ [StepR] ++ (preorder v r steps)
-
-
--- search v Empty = 
--- search v (Node a l r)
---   | v == a = []
---  | otherwise 
-
--- search v tree = go v tree []
---   where go _ Empty _ = Nothing
---         go v (Node a t1 t2) steps 
---           | v == a    = Just steps
---          | v < a     = go v t1 (StepL:steps)
---           | otherwise = go v t2 (StepR:steps)
