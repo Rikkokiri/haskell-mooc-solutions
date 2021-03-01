@@ -314,9 +314,14 @@ updateCount x ((y,c):ys)
 --    ==> (4,[(2,1),(3,1),(4,1),(7,1)])
 
 occurrences :: (Eq a) => [a] -> State [(a,Int)] Int
-occurrences [] = do st <- get
-                    return (length st)
-occurrences (x:xs) = do
-              count x
-              occurrences xs                   
-              
+occurrences xs = do
+  mapM_ count xs
+  counts <- get
+  return (length counts)
+
+-- My solution was:
+-- occurrences [] = do st <- get
+--                     return (length st)
+-- occurrences (x:xs) = do
+--               count x
+--               occurrences xs                   
