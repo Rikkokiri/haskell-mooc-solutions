@@ -3,7 +3,6 @@ module Set9b where
 import Mooc.Todo
 
 import Data.List
-import Data.Array
 
 --------------------------------------------------------------------------------
 -- Ex 1: In this exercise set, we'll solve the N Queens problem step by step.
@@ -51,7 +50,7 @@ nextRow :: Coord -> Coord
 nextRow (i,j) = (i+1,1)
 
 nextCol :: Coord -> Coord
-nextCol (i,j) = (i, j+1)
+nextCol (i,j) = (i,j+1)
 
 --------------------------------------------------------------------------------
 -- Ex 2: Implement the function prettyPrint that, given the size of the
@@ -99,16 +98,18 @@ nextCol (i,j) = (i, j+1)
 -- of the width (or height) n of the chess board; the naïve solution with elem
 -- takes O(n^3) time. Just ignore the previous sentence, if you're not familiar
 -- with the O-notation.)
-
 prettyPrint :: Size -> [Coord] -> String
-prettyPrint size coord = unlines 
-                        $ map (map snd)                                 -- Take just the letter
-                        $ groupBy (\a b -> fst (fst a) == fst (fst b))  -- Group by row
-                        $ assocs                                        -- Convert back to list
-                        $ listArray ((1,1),(size,size)) (repeat '.') // map (\(row, col) -> ((row,col),'Q')) coord
-
--- Useful functions:
--- unlines
+ -- This is the solution to the challenge:
+prettyPrint n qs =
+  let
+    helper (i,j) ((r,c):qs)
+      | i==r && j == c       = 'Q'  : helper (nextCol (i,j)) qs
+    helper (i,j) qs
+      | i > n                = ""
+      | j > n                = '\n' : helper (nextRow (i,j)) qs
+      | otherwise            = '.'  : helper (nextCol (i,j)) qs
+  in
+    helper (1,1) (sort qs)
 
 --------------------------------------------------------------------------------
 -- Ex 3: The task in this exercise is to define the relations sameRow, sameCol,
@@ -132,16 +133,16 @@ prettyPrint size coord = unlines
 --   sameAntidiag (500,5) (5,500) ==> True
 
 sameRow :: Coord -> Coord -> Bool
-sameRow (i,j) (k,l) = i == k
+sameRow (i,_) (k,_) = i == k
 
 sameCol :: Coord -> Coord -> Bool
-sameCol (i,j) (k,l) = j == l
+sameCol (_,j) (_,l) = j == l
 
 sameDiag :: Coord -> Coord -> Bool
-sameDiag (i,j) (k,l) = (i-j) == (k-l)
+sameDiag (i,j) (k,l) = i - j == k - l
 
 sameAntidiag :: Coord -> Coord -> Bool
-sameAntidiag (i,j) (k,l) = (i+j) == (k+l)
+sameAntidiag (i,j) (k,l) = i + j == k + l
 
 --------------------------------------------------------------------------------
 -- Ex 4: In chess, a queen may capture another piece in the same row, column,
@@ -197,13 +198,8 @@ type Candidate = Coord
 type Stack     = [Coord]
 
 danger :: Candidate -> Stack -> Bool
-danger cand queens = any (\q -> inDanger cand q) queens
-    where inDanger c q
-            | sameRow c q       = True
-            | sameCol c q       = True
-            | sameDiag c q      = True
-            | sameAntidiag c q  = True
-            | otherwise         = False
+danger c s = or [r c c' | r <- relations, c' <- s]
+  where relations = [sameRow, sameCol, sameDiag, sameAntidiag]
 
 --------------------------------------------------------------------------------
 -- Ex 5: In this exercise, the task is to write a modified version of
@@ -238,42 +234,27 @@ danger cand queens = any (\q -> inDanger cand q) queens
 -- solution to this version. Any working solution is okay in this exercise.)
 
 prettyPrint2 :: Size -> Stack -> String
-prettyPrint2 size queens = unlines
-                           $ map (map snd)
-                           $ groupBy (\a b -> fst (fst a) == fst (fst b))  -- Group by row
-                           $ concat
-                           $ grid size queens
---                        $ assocs                                        -- Convert back to list
---                        $ listArray ((1,1),(size,size)) 
-
-grid size queens = [[((r,c),ch) | c <- [1..size], ch <- chooseChar (r,c) queens ] | r <- [1..size]]
--- grid size queens = [[(r,c,ch) | c <- [1..size], ch <- chooseChar (r,c) queens ] | r <- [1..size]]
-
-
-chooseChar :: Coord -> Stack -> String 
-chooseChar pos queens
-    | elem pos queens   = "Q"
-    | danger pos queens = "#"
-    | otherwise         = "."
-
--- printTest :: Size -> Stack -> Stack
--- printTest size queens 
-
--- let a = [[(r,c) | c <- [1..3]] | r <- [1..3] ]
--- [[(r,c) | c <- [1..3], r <- [1..3] ]
--- 
+prettyPrint2 n qs =
+  let
+    helper (i,j) qs
+      | i > n           = ""
+      | j > n           = '\n' : helper (nextRow (i,j)) qs
+      | (i,j) `elem` qs = 'Q'  : helper (nextCol (i,j)) qs
+      | danger (i,j) qs = '#'  : helper (nextCol (i,j)) qs
+      | otherwise       = '.'  : helper (nextCol (i,j)) qs
+  in
+    helper (1,1) (sort qs)
 
 --------------------------------------------------------------------------------
 -- Ex 6: Now that we can check if a piece can be safely placed into a square in
 -- the chessboard, it's time to write the first piece of the actual solution.
 --
 -- Given the size of the chessboard and a stack, the function fixFirst
--- should take the queen on the top of the stack, and if it is in
--- danger, move it right _along the same row_ (in the direction of
--- increasing columns) until it is not in danger.
+-- should take the queen on the top of the stack, and if it is in in
+-- danger, move it right (in the direction of increasing columns)
+-- until it is not in danger.
 --
--- If no safe spot is found for the queen on that row, fixFirst should
--- return Nothing.
+-- If no safe spot is found for the queen, fixFirst should return Nothing.
 --
 -- Examples:
 --   fixFirst 5 [(1,1)] ==> Just [(1,1)]
@@ -302,15 +283,10 @@ chooseChar pos queens
 --     Q#######
 
 fixFirst :: Size -> Stack -> Maybe Stack
-fixFirst n [x] = Just [x]
-fixFirst n (x:xs)
-    | rowEnd n x = Nothing
-    | not (danger x xs) = Just (x:xs)
-    | danger x xs && rowEnd n x = Nothing
-    | otherwise                 = fixFirst n ((nextCol x):xs)
-
-rowEnd :: Size -> Coord -> Bool
-rowEnd n (r,c) = c > n
+fixFirst n ((i,j):s)
+  | j > n          = Nothing
+  | danger (i,j) s = fixFirst n (nextCol (i,j):s)
+  | otherwise      = Just ((i,j):s)
 
 --------------------------------------------------------------------------------
 -- Ex 7: We need two helper functions for stack management.
@@ -332,12 +308,10 @@ rowEnd n (r,c) = c > n
 -- Hint: Remember nextRow and nextCol? Use them!
 
 continue :: Stack -> Stack
-continue (x:xs) = (y:x:xs)
-    where y = nextRow x
+continue ((i,j):s) = nextRow (i,j) : (i,j) : s
 
 backtrack :: Stack -> Stack
-backtrack (_:x:xs) = (y:xs)
-    where y = nextCol x
+backtrack (_:(i,j):s) = nextCol (i,j) : s
 
 --------------------------------------------------------------------------------
 -- Ex 8: Let's take a step. Our algorithm solves the problem (in a
@@ -405,11 +379,12 @@ backtrack (_:x:xs) = (y:xs)
 --     step 8 [(4,7),(7,5),(6,2),(8,1)] ==> [(5,1),(4,7),(7,5),(6,2),(8,1)]
 
 step :: Size -> Stack -> Stack
-step n s = case fixFirst n s of Just xs -> continue xs
-                                Nothing -> backtrack s
+step n qs = case fixFirst n qs of
+              Just qs' -> continue qs'
+              Nothing -> backtrack qs
 
 --------------------------------------------------------------------------------
--- Ex 9: Let's solve our puzzle! The function finish takes a partial
+-- Ex 8: Let's solve our puzzle! The function finish takes a partial
 -- solution (stack) and repeatedly step until a complete solution is
 -- found.
 --
@@ -421,10 +396,9 @@ step n s = case fixFirst n s of Just xs -> continue xs
 -- solve the n queens problem.
 
 finish :: Size -> Stack -> Stack
-finish n s
-    | length st > n = tail st
-    | otherwise     = finish n st
-        where st = step n s 
+finish n qs
+  | length qs > n = tail qs
+  | otherwise     = finish n (step n qs)
 
 solve :: Size -> Stack
 solve n = finish n [(1,1)]
