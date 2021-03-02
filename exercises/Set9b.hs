@@ -243,25 +243,14 @@ prettyPrint2 size queens = unlines
                            $ groupBy (\a b -> fst (fst a) == fst (fst b))  -- Group by row
                            $ concat
                            $ grid size queens
---                        $ assocs                                        -- Convert back to list
---                        $ listArray ((1,1),(size,size)) 
 
+grid :: Size -> Stack -> [[(Coord,Char)]]
 grid size queens = [[((r,c),ch) | c <- [1..size], ch <- chooseChar (r,c) queens ] | r <- [1..size]]
--- grid size queens = [[(r,c,ch) | c <- [1..size], ch <- chooseChar (r,c) queens ] | r <- [1..size]]
+    where chooseChar pos queens
+            | elem pos queens   = "Q"
+            | danger pos queens = "#"
+            | otherwise         = "."
 
-
-chooseChar :: Coord -> Stack -> String 
-chooseChar pos queens
-    | elem pos queens   = "Q"
-    | danger pos queens = "#"
-    | otherwise         = "."
-
--- printTest :: Size -> Stack -> Stack
--- printTest size queens 
-
--- let a = [[(r,c) | c <- [1..3]] | r <- [1..3] ]
--- [[(r,c) | c <- [1..3], r <- [1..3] ]
--- 
 
 --------------------------------------------------------------------------------
 -- Ex 6: Now that we can check if a piece can be safely placed into a square in
