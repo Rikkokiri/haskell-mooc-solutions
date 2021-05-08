@@ -355,11 +355,11 @@ instance Applicative SL where
 instance Monad SL where
   -- implement return and >>=
   return a = SL $ \s -> (a,s,[])
-  -- (>>=) = todo
-  (SL x) >>= f = todo -- SL $ \s -> let (v,s',l++) = x s in runSL (f v) s'
-      
+  (>>=) = todo
+  -- (SL x) >>= f = SL $ \s -> (a,s0,l)
+     
+
     -- let (v,s',l) = x s in runSL (f v) s' 
-                                
 
   -- (SL x) >>= f = SL $ \s -> let (v,newState,log) = x s in runSL (f a) s' l'
 
