@@ -28,7 +28,8 @@ import qualified Data.ByteString.Lazy as BL
 --  greetText (T.pack "Benedict Cumberbatch") ==> "Hello, Benedict Cumber...!"
 
 greetText :: T.Text -> T.Text
-greetText = todo
+greetText name = T.concat [(T.pack "Hello, "), (T.take 15 name), end]
+    where end = if T.length name > 15 then T.pack "...!" else T.pack "!"
 
 ------------------------------------------------------------------------------
 -- Ex 2: Capitalize every second word of a Text.
@@ -40,7 +41,10 @@ greetText = todo
 --     ==> "WORD"
 
 shout :: T.Text -> T.Text
-shout = todo
+shout txt = T.unwords (shout' (T.words txt))
+    where shout' [] = []
+          shout' [x] = [T.toUpper x]
+          shout' (x:y:xs) = [T.toUpper x] ++ [y] ++ shout' xs
 
 ------------------------------------------------------------------------------
 -- Ex 3: Find the longest sequence of a single character repeating in

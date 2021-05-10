@@ -76,10 +76,15 @@ deal players cards = zip cards (cycle players)
 --   averages [3,2,1] ==> [3.0,2.5,2.0]
 --   take 10 (averages [1..]) ==> [1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5]
 
-
-
 averages :: [Double] -> [Double]
 averages = todo
+-- averages [] = []
+-- averages xs = averages' xs 1
+
+-- averages :: [Double] -> Int -> [Double]
+-- averages' lst i = [avg (take 1 lst)] ++ averages' lst (i+1)
+--    where
+--        avg xs = sum xs / (length xs)
 
 ------------------------------------------------------------------------------
 -- Ex 5: Given two lists, xs and ys, and an element z, generate an
