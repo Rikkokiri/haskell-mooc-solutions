@@ -55,7 +55,9 @@ shout txt = T.unwords (shout' (T.words txt))
 --   longestRepeat (T.pack "aabbbbccc") ==> 4
 
 longestRepeat :: T.Text -> Int
-longestRepeat = todo
+longestRepeat txt = if T.length txt == 0
+                    then 0
+                    else maximum ( map T.length (T.group txt))
 
 ------------------------------------------------------------------------------
 -- Ex 4: Given a lazy (potentially infinite) Text, extract the first n
