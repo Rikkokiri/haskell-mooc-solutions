@@ -71,6 +71,7 @@ longestRepeat txt = if T.length txt == 0
 
 takeStrict :: Int64 -> TL.Text -> T.Text
 takeStrict = todo
+-- takeStrict i t = T.take i t
 
 ------------------------------------------------------------------------------
 -- Ex 5: Find the difference between the largest and smallest byte
@@ -82,7 +83,9 @@ takeStrict = todo
 --   byteRange (B.pack [3]) ==> 0
 
 byteRange :: B.ByteString -> Word8
-byteRange = todo
+byteRange s
+    | B.length s == 0 = 0
+    | otherwise = (B.maximum s) - (B.minimum s)
 
 ------------------------------------------------------------------------------
 -- Ex 6: Compute the XOR checksum of a ByteString. The XOR checksum of
