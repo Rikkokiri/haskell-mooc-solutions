@@ -198,6 +198,10 @@ removeWhSp xs = filter (\x -> x /= ' ' && x /= '\n') xs
 --
 -- Hint: remember the function `lookup` from Prelude?
 --
+-- Note! The order of arguments to `compose` is the other way around
+-- compared to e.g. (.): `compose f g` should apply `f` first, then
+-- `g`, but `f.g` applies `g` first, then `f`.
+--
 -- Examples:
 --   composing two mappings of size 1:
 --     compose [("a",1)] [(1,True)]

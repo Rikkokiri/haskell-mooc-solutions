@@ -77,7 +77,7 @@ validateDiv = todo
 -- Ex 5: Validating street addresses. A street address consists of a
 -- street name, a street number, and a postcode.
 --
--- Implement the functoin validateAddress which constructs an Address
+-- Implement the function validateAddress which constructs an Address
 -- value if the input is valid:
 --
 -- * Street length should be at most 20 characters
@@ -132,6 +132,9 @@ twoPersons name1 age1 employed1 name2 age2 employed2 = todo
 -- errors if the value is not an Int or a Bool.
 --
 -- Hint: remember readMaybe
+--
+-- PS. The tests won't test special cases of Int literals like hexadecimal
+-- (0x3a) or octal (0o14).
 --
 -- Examples:
 --  boolOrInt "True"    ==> Ok (Left True)
