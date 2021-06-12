@@ -105,9 +105,7 @@ byteRange s
 --   xorChecksum (B.pack []) ==> 0
 
 xorChecksum :: B.ByteString -> Word8
-xorChecksum = todo
-    -- B.pack . B.zipWith BT.xor
-    -- foldr (\w r -> BT.xor w r) (B.pack "")
+xorChecksum xs = B.foldr BT.xor 0 xs
 
 ------------------------------------------------------------------------------
 -- Ex 7: Given a ByteString, compute how many UTF-8 characters it
