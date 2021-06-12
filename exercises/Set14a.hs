@@ -105,7 +105,9 @@ byteRange s
 --   xorChecksum (B.pack []) ==> 0
 
 xorChecksum :: B.ByteString -> Word8
-xorChecksum = todo -- foldr (\w r -> BT.xor w r) (B.pack "")
+xorChecksum = todo
+    -- B.pack . B.zipWith BT.xor
+    -- foldr (\w r -> BT.xor w r) (B.pack "")
 
 ------------------------------------------------------------------------------
 -- Ex 7: Given a ByteString, compute how many UTF-8 characters it
@@ -122,14 +124,8 @@ xorChecksum = todo -- foldr (\w r -> BT.xor w r) (B.pack "")
 --   countUtf8Chars (B.drop 1 (encodeUtf8 (T.pack "åäö"))) ==> Nothing
 
 countUtf8Chars :: B.ByteString -> Maybe Int
-countUtf8Chars xs = todo -- foldr countHelper 0 xs
-
--- countHelper :: B.ByteString -> Int -> Maybe Int
--- countHelper (x:xs) c = case E.decodeUtf8' x of Left _ -> Just (c)
---                                                Right _ -> Just (c + 1)
-
--- countUtf8Chars s = helper (decodeUtf8' s) 0
---     where helper (Right _) c = countUtf8Chars 
+countUtf8Chars xs = case E.decodeUtf8' xs of Left _ -> Nothing
+                                             Right t -> Just (T.length t)
 
 ------------------------------------------------------------------------------
 -- Ex 8: Given a (nonempty) strict ByteString b, generate an infinite
