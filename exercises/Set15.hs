@@ -54,8 +54,24 @@ statements x y = liftA2 combine x (liftA2 combine [" is ", " is not "] y)
 --  calculator "doubl" "7"    ==> Nothing
 --  calculator "double" "7x"  ==> Nothing
 
+data Operation = Negate | Double
+  deriving Show
+
+runOp :: Operation -> Int -> Int
+runOp Negate v = -1 * v
+runOp Double v = 2 * v
+
+parseAmount :: String -> Maybe Int
+parseAmount = readMaybe
+
+parseOperation :: String -> Maybe Operation
+parseOperation "negate" = pure Negate
+parseOperation "double" = pure Double
+parseOperation _        = Nothing
+
+-- The function to implement:
 calculator :: String -> String -> Maybe Int
-calculator = todo
+calculator opStr valStr = liftA2 runOp (parseOperation opStr) (parseAmount valStr)
 
 ------------------------------------------------------------------------------
 -- Ex 4: Safe division. Implement the function validateDiv that
