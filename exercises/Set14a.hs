@@ -5,9 +5,9 @@ module Set14a where
 
 import Mooc.Todo
 
-import Data.Bits
+import Data.Bits as BT
 import Data.Char
-import Data.Text.Encoding
+import Data.Text.Encoding as E
 import Data.Word
 import Data.Int
 import qualified Data.Text as T
@@ -70,8 +70,7 @@ longestRepeat txt = if T.length txt == 0
 --   takeStrict 15 (TL.pack (cycle "asdf"))  ==>  "asdfasdfasdfasd"
 
 takeStrict :: Int64 -> TL.Text -> T.Text
-takeStrict = todo
--- takeStrict i t = T.take i t
+takeStrict i t = TL.toStrict (TL.take i t)
 
 ------------------------------------------------------------------------------
 -- Ex 5: Find the difference between the largest and smallest byte
@@ -106,7 +105,7 @@ byteRange s
 --   xorChecksum (B.pack []) ==> 0
 
 xorChecksum :: B.ByteString -> Word8
-xorChecksum = todo
+xorChecksum = todo -- foldr (\w r -> BT.xor w r) (B.pack "")
 
 ------------------------------------------------------------------------------
 -- Ex 7: Given a ByteString, compute how many UTF-8 characters it
@@ -123,7 +122,14 @@ xorChecksum = todo
 --   countUtf8Chars (B.drop 1 (encodeUtf8 (T.pack "åäö"))) ==> Nothing
 
 countUtf8Chars :: B.ByteString -> Maybe Int
-countUtf8Chars = todo
+countUtf8Chars xs = todo -- foldr countHelper 0 xs
+
+-- countHelper :: B.ByteString -> Int -> Maybe Int
+-- countHelper (x:xs) c = case E.decodeUtf8' x of Left _ -> Just (c)
+--                                                Right _ -> Just (c + 1)
+
+-- countUtf8Chars s = helper (decodeUtf8' s) 0
+--     where helper (Right _) c = countUtf8Chars 
 
 ------------------------------------------------------------------------------
 -- Ex 8: Given a (nonempty) strict ByteString b, generate an infinite
@@ -135,5 +141,6 @@ countUtf8Chars = todo
 --     ==> [0,1,2,2,1,0,0,1,2,2,1,0,0,1,2,2,1,0,0,1]
 
 pingpong :: B.ByteString -> BL.ByteString
-pingpong = todo
+pingpong b = BL.cycle (s <> (BL.reverse s))
+    where s = BL.fromStrict b
 
