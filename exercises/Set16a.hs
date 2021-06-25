@@ -112,7 +112,8 @@ freq2 xs = map (\x -> (x,1)) xs
 --  +++ OK, passed 100 tests.
 
 outputInInput :: (Show a, Eq a) => [a] -> [(a,Int)] -> Property
-outputInInput input output = todo
+outputInInput input output = forAll (elements output) (\(s,c) -> (countOccur s input) == c)
+  where countOccur symbol = length . filter (==symbol)
 
 -- This function passes the outputInInput test but not the others
 freq3 :: Eq a => [a] -> [(a,Int)]
@@ -142,6 +143,8 @@ freq3 (x:xs) = [(x,1 + length (filter (==x) xs))]
 
 frequenciesProp :: ([Char] -> [(Char,Int)]) -> NonEmptyList Char -> Property
 frequenciesProp freq input = todo
+-- (sumIsLength input out) .&&. (inputInOutput input out)
+--  where out = freq input
 
 frequencies :: Eq a => [a] -> [(a,Int)]
 frequencies [] = []
@@ -173,6 +176,12 @@ frequencies (x:ys) = (x, length xs) : frequencies others
 
 genList :: Gen [Int]
 genList = todo
+  -- do
+  -- n <- choose (3,5)
+  -- fmap sort (sequence [ choose (1,10) | _ <- [1..n] ])
+  -- list <- vectorOf n (choose (1,10))
+  -- sort fmap sort
+  -- crest <- vectorOf len (choose ('a','z'))
 
 ------------------------------------------------------------------------------
 -- Ex 7: Here are the datatypes Arg and Expression from Set 15. Write
@@ -210,7 +219,21 @@ data Expression = Plus Arg Arg | Minus Arg Arg
   deriving (Show, Eq)
 
 instance Arbitrary Arg where
-  arbitrary = todo
+  arbitrary = oneof [arbitraryNumber, arbitraryVariable]
+              where arbitraryNumber = do
+                      n <- choose (0, 10)
+                      return $ Number n
+                    arbitraryVariable = do
+                      v <- elements ['a','b','c','x','y','z']
+                      return $ Variable v
 
 instance Arbitrary Expression where
-  arbitrary = todo
+  arbitrary = oneof [arbitraryPlus, arbitraryMinus]
+    where arbitraryPlus = do
+            a <- arbitrary
+            b <- arbitrary
+            return $ Plus a b
+          arbitraryMinus = do
+            a <- arbitrary
+            b <- arbitrary
+            return $ Minus a b
