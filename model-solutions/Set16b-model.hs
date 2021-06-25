@@ -30,8 +30,8 @@ pounds = Money 3
 usdToChf :: Rate USD CHF
 usdToChf = Rate 1.11
 
-composeRates :: Rate a b -> Rate b c -> Rate a c 
-composeRates (Rate rate1) (Rate rate2) = Rate (rate1 * rate2)
+composeRates :: Rate from mid -> Rate mid to -> Rate from to
+composeRates (Rate x) (Rate y) = Rate (x*y)
 
 ------------------------------------------------------------------------------
 -- Ex 3: Tracking first, last and full names with phantom types. The
@@ -53,11 +53,12 @@ composeRates (Rate rate1) (Rate rate2) = Rate (rate1 * rate2)
 data First
 data Last
 data Full
+
 data Name a = Name String
 
 -- Get the String contained in a name
-fromName :: Name a -> String
-fromName (Name n) = n
+--fromName :: Name a -> String
+fromName (Name s) = s
 
 -- Build a Name First
 toFirst :: String -> Name First
@@ -65,7 +66,7 @@ toFirst s = Name s
 
 -- Build a Name Last
 toLast :: String -> Name Last
-toLast s = Name s 
+toLast s = Name s
 
 ------------------------------------------------------------------------------
 -- Ex 4: Implement the functions capitalize and toFull.
@@ -86,7 +87,7 @@ toLast s = Name s
 --  fromName (capitalize (toLast "smith")) ==> "Smith"
 
 capitalize :: Name a -> Name a
-capitalize (Name (c:cs))= Name (toUpper c : cs)
+capitalize (Name (c:cs)) = Name (toUpper c : cs)
 
 toFull :: Name First -> Name Last -> Name Full
 toFull (Name f) (Name l) = Name (f ++ " " ++ l)
@@ -104,10 +105,10 @@ class Render currency where
   render :: Money currency -> String
 
 instance Render EUR where
-  render (Money val) = show val ++ "e"
+  render (Money x) = show x ++ "e"
 
 instance Render USD where
-  render (Money val) = "$" ++ show val
+  render (Money x) = "$" ++ show x
 
 instance Render CHF where
-  render (Money val) = show val ++ "chf"
+  render (Money x) = show x ++ "chf"
