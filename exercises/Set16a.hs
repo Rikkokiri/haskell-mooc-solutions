@@ -142,9 +142,7 @@ freq3 (x:xs) = [(x,1 + length (filter (==x) xs))]
 --  +++ OK, passed 100 tests.
 
 frequenciesProp :: ([Char] -> [(Char,Int)]) -> NonEmptyList Char -> Property
-frequenciesProp freq input = todo
--- (sumIsLength input out) .&&. (inputInOutput input out)
---  where out = freq input
+frequenciesProp freq (NonEmpty input) = conjoin [sumIsLength input (freq input), inputInOutput input (freq input), outputInInput input (freq input)]
 
 frequencies :: Eq a => [a] -> [(a,Int)]
 frequencies [] = []
@@ -176,6 +174,11 @@ frequencies (x:ys) = (x, length xs) : frequencies others
 
 genList :: Gen [Int]
 genList = todo
+  -- sized $ \n -> do
+  --      k <- choose (3, 5) -- list length
+  --      list <- sequence [ arbitrary | _ <- [1..k] ]
+  --      return $ list
+
   -- do
   -- n <- choose (3,5)
   -- fmap sort (sequence [ choose (1,10) | _ <- [1..n] ])
