@@ -88,7 +88,7 @@ calculator opStr valStr = liftA2 runOp (parseOperation opStr) (parseAmount valSt
 --  validateDiv 0 3 ==> Ok 0
 
 validateDiv :: Int -> Int -> Validation Int
-validateDiv = todo
+validateDiv a b = check (b /= 0) "Division by zero!" (div a b)
 
 ------------------------------------------------------------------------------
 -- Ex 5: Validating street addresses. A street address consists of a
@@ -118,7 +118,11 @@ data Address = Address String String String
   deriving (Show,Eq)
 
 validateAddress :: String -> String -> String -> Validation Address
-validateAddress streetName streetNumber postCode = todo
+validateAddress streetName streetNumber postCode = liftA2 (Address checkedName checkedNumber checkedCode)
+  where checkedName = check (length streetName <= 20) "Invalid street name" streetName
+        checkedNumber = check (all isDigit streetNumber) "Invalid street number" streetNumber
+        checkedCode = check (length postCode == 5) "Invalid postcode" postCode
+        -- formAddress name number code = Address name number code
 
 ------------------------------------------------------------------------------
 -- Ex 6: Given the names, ages and employment statuses of two
