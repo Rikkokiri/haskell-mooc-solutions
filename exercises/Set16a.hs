@@ -173,18 +173,10 @@ frequencies (x:ys) = (x, length xs) : frequencies others
 --  [2,4,10]
 
 genList :: Gen [Int]
-genList = todo
-  -- sized $ \n -> do
-  --      k <- choose (3, 5) -- list length
-  --      list <- sequence [ arbitrary | _ <- [1..k] ]
-  --      return $ list
-
-  -- do
-  -- n <- choose (3,5)
-  -- fmap sort (sequence [ choose (1,10) | _ <- [1..n] ])
-  -- list <- vectorOf n (choose (1,10))
-  -- sort fmap sort
-  -- crest <- vectorOf len (choose ('a','z'))
+genList = do
+  c <- elements [1..10]
+  n <- choose (3,5)
+  return (replicate n c)
 
 ------------------------------------------------------------------------------
 -- Ex 7: Here are the datatypes Arg and Expression from Set 15. Write
