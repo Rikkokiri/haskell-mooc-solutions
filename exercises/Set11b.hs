@@ -90,39 +90,7 @@ compose op1 op2 c = do a_result <- op2 c
                        return b_result
 
 ------------------------------------------------------------------------------
--- Ex 5: Implement the operation mkCounter that produces the IO operations
--- inc :: IO () and get :: IO Int. These operations should work like this:
---
---   get returns the number of times inc has been called
---
--- In other words, a simple stateful counter. Use an IORef to store the count.
---
--- Note: this is an IO operation that produces two IO operations. Thus
--- the type of mkCounter is IO (IO (), IO Int).
---
--- This exercise is tricky. Feel free to leave it until later.
---
--- An example of how mkCounter works in GHCi:
---
---  *Set11b> (inc,get) <- mkCounter
---  *Set11b> inc
---  *Set11b> inc
---  *Set11b> get
---  2
---  *Set11b> inc
---  *Set11b> inc
---  *Set11b> get
---  4
-
-mkCounter :: IO (IO (), IO Int)
-mkCounter = do
-    r <- newIORef 0
-    let inc = do modifyIORef r (+1)
-    get <- return (readIORef r)
-    return (inc, get)
-
-------------------------------------------------------------------------------
--- Ex 6: Reading lines from a file. The module System.IO defines
+-- Ex 5: Reading lines from a file. The module System.IO defines
 -- operations for Handles, which represent open files that can be read
 -- from or written to. Here are some functions that might be useful:
 --
@@ -162,7 +130,7 @@ hFetchLines' h False = do
     return (line:rest)
 
 ------------------------------------------------------------------------------
--- Ex 7: Given a Handle and a list of line indexes, produce the lines
+-- Ex 6: Given a Handle and a list of line indexes, produce the lines
 -- at those indexes from the file.
 --
 -- Line indexing starts from 1.
@@ -177,7 +145,7 @@ hSelectLines h nums = do
     return [allLines !! (i-1) | i <- nums]
 
 ------------------------------------------------------------------------------
--- Ex 8: In this exercise we see how a program can be split into a
+-- Ex 7: In this exercise we see how a program can be split into a
 -- pure part that does all of the work, and a simple IO wrapper that
 -- drives the pure logic.
 --

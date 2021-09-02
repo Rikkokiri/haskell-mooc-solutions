@@ -14,7 +14,7 @@ import Examples.Bank
 ------------------------------------------------------------------------------
 -- Ex 1: Your task is to help implement the function readName that
 -- given a string like "Forename Surname" produces the pair
--- ("Forname", "Surname"). readName should fail (return Nothing) in
+-- ("Forename", "Surname"). readName should fail (return Nothing) in
 -- the following cases:
 --
 --   1. the input string doesn't contain a space
@@ -211,7 +211,7 @@ rob from to =
     depositOp to
 
 ------------------------------------------------------------------------------
--- Ex 7: using the State monad, write the operation update that first
+-- Ex 7: using the State monad, write the operation `update` that first
 -- multiplies the state by 2 and then adds one to it. The state has
 -- type Int.
 --
