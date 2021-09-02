@@ -73,12 +73,19 @@ getAllQuery = Query (T.pack "SELECT account, amount FROM events;")
 -- openDatabase should open an SQLite database using the given
 -- filename, run initQuery on it, and produce a database Connection.
 openDatabase :: String -> IO Connection
-openDatabase = todo
+openDatabase _ = open ""
 
 -- given a db connection, an account name, and an amount, deposit
 -- should add an (account, amount) row into the database
 deposit :: Connection -> T.Text -> Int -> IO ()
-deposit = todo
+deposit conn account amount = execute conn depositQuery (account :: T.Text, amount :: Int)
+  -- do
+  -- let input = (acc, amount)
+  -- query conn depositQuery input
+
+
+-- [":str" := ("updated str" :: T.Text), ":id" := rowId]
+-- execute conn "INSERT INTO test (id, str) VALUES (?,?)" (TestField 13 "test string 3")
 
 ------------------------------------------------------------------------------
 -- Ex 2: Fetching an account's balance. Below you'll find

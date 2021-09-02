@@ -118,11 +118,15 @@ data Address = Address String String String
   deriving (Show,Eq)
 
 validateAddress :: String -> String -> String -> Validation Address
-validateAddress streetName streetNumber postCode = liftA2 (Address checkedName checkedNumber checkedCode)
-  where checkedName = check (length streetName <= 20) "Invalid street name" streetName
-        checkedNumber = check (all isDigit streetNumber) "Invalid street number" streetNumber
-        checkedCode = check (length postCode == 5) "Invalid postcode" postCode
-        -- formAddress name number code = Address name number code
+validateAddress streetName streetNumber postCode = todo
+-- liftA2 formAddress checkedName checkedNumber checkedCode
+  --where checkedName = check (length streetName <= 20) "Invalid street name" streetName
+    --    checkedNumber = check (all isDigit streetNumber) "Invalid street number" streetNumber
+    --    checkedCode = check (length postCode == 5) "Invalid postcode" postCode
+    --    formAddress name number code = Address (show name) (show number) (show code)
+        -- formAddress name number code = Address (show name) (show number) (show code)
+          -- (Address name number code)
+          -- Address (pure name) (pure number) (pure code)
 
 ------------------------------------------------------------------------------
 -- Ex 6: Given the names, ages and employment statuses of two
@@ -164,7 +168,13 @@ twoPersons name1 age1 employed1 name2 age2 employed2 = todo
 --  boolOrInt "Falseb"  ==> Errors ["Not a Bool","Not an Int"]
 
 boolOrInt :: String -> Validation (Either Bool Int)
-boolOrInt = todo
+boolOrInt s = todo -- check (parseBool s) "Not a Bool" <|> check (parseInt s) "Not an Int"
+
+parseInt :: String -> Maybe Int
+parseInt = readMaybe
+
+parseBool :: String -> Maybe Bool
+parseBool = readMaybe
 
 ------------------------------------------------------------------------------
 -- Ex 8: Improved phone number validation. Implement the function
@@ -257,11 +267,13 @@ data Priced a = Priced Int a
   deriving (Show, Eq)
 
 instance Functor Priced where
-  fmap = todo
+  fmap f (Priced x y) = Priced x (f y)
 
 instance Applicative Priced where
-  pure = todo
-  liftA2 = todo
+  pure = Priced 0
+  liftA2 f (pure x) (pure y) = Priced 0 (f x y)
+  -- f (Priced x y) (Priced z w) = Priced (f x z) (f y w)
+  -- liftA2 f a b = Priced 0 (f a b)
 
 ------------------------------------------------------------------------------
 -- Ex 11: This and the next exercise will use a copy of the
