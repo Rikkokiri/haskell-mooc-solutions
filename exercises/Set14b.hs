@@ -160,11 +160,16 @@ parseInt :: T.Text -> Maybe Int
 parseInt = readMaybe . T.unpack
 
 parseCommand :: [T.Text] -> Maybe Command
-parseCommand path
-  | head path == T.pack "balance" = Just (Balance (path !! 1))
-  | head path == T.pack "deposit" = Just (Deposit (path !! 1) (amount (parseInt (path !! 2))))
-    where amount (Just a) = a
-          amount Nothing = 0
+parseCommand [cm,acc] = Just (Balance acc)
+parseCommand [cm,acc,val] = Just (Deposit acc (parseAmount $ parseInt val))
+  where parseAmount (Just a) = a
+        parseAmount Nothing  = 0
+
+-- First, slightly uglier solution:
+--  | head path == T.pack "balance" = Just (Balance (path !! 1))
+--  | head path == T.pack "deposit" = Just (Deposit (path !! 1) (amount (parseInt (path !! 2))))
+--    where amount (Just a) = a
+--          amount Nothing = 0
 
 ------------------------------------------------------------------------------
 -- Ex 4: Running commands. Implement the IO operation perform that takes a
