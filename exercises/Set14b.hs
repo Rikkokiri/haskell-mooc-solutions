@@ -112,16 +112,16 @@ balanceQuery :: Query
 balanceQuery = Query (T.pack "SELECT amount FROM events WHERE account = ?;")
 
 balance :: Connection -> T.Text -> IO Int
-balance db account = todo
-  -- do
-  -- res <- query db balanceQuery [account] -- :: [[Int]]
-  -- let r = head (foldr (:) res [])  -- :: IO Int
-  -- return r
-
--- balance db account
---            = do res <- query db balanceQuery account :: IO [Int]
---                 return (sum res)
-
+balance db account = do
+  res <- query db balanceQuery [account] -- :: [[Int]]
+  return $ sumNested res
+  
+-- Query returns array of (singleton) arrays that need to be summed together
+-- Technically head x would be enough but ¯\_(ツ)_/¯
+sumNested :: [[Int]] -> Int
+sumNested [] = 0
+sumNested [x] = sum x
+sumNested (y:xs) = sum y + sumNested xs
 
 ------------------------------------------------------------------------------
 -- Ex 3: Now that we have the database part covered, let's think about
@@ -160,18 +160,19 @@ parseInt :: T.Text -> Maybe Int
 parseInt = readMaybe . T.unpack
 
 parseCommand :: [T.Text] -> Maybe Command
-parseCommand [cm,acc] = Just (Balance acc)
-parseCommand [cm,acc,val] = Just (Deposit acc (parseAmount $ parseInt val))
+parseCommand [cm,acc] -- = 
+  | cm == T.pack "balance" = Just (Balance acc)
+  | otherwise              = Nothing
+parseCommand [cm,acc,val] -- 
+  | cm == T.pack "deposit"  = case (parseInt val) of
+                              Nothing -> Nothing
+                              Just v -> Just (Deposit acc v)
+  | cm == T.pack "withdraw" = case (parseInt val) of
+                              Nothing -> Nothing
+                              Just v -> Just (Deposit acc (-1*v))
+  | otherwise = Nothing                                                             
 parseCommand _ = Nothing
 
-parseAmount (Just a) = a
-parseAmount Nothing  = 0
-
--- First, slightly uglier solution:
---  | head path == T.pack "balance" = Just (Balance (path !! 1))
---  | head path == T.pack "deposit" = Just (Deposit (path !! 1) (amount (parseInt (path !! 2))))
---    where amount (Just a) = a
---          amount Nothing = 0
 
 ------------------------------------------------------------------------------
 -- Ex 4: Running commands. Implement the IO operation perform that takes a
@@ -203,7 +204,7 @@ perform db (Just (Balance acc)) = do
 perform db (Just (Deposit acc val)) = do
   deposit db acc val
   return $ T.pack "OK"
-perform db _ = return $ T.pack ""
+perform db Nothing = return $ T.pack "ERROR"
 
 ------------------------------------------------------------------------------
 -- Ex 5: Next up, let's set up a simple HTTP server. Implement a WAI
@@ -254,7 +255,10 @@ simpleServer request respond = do
 -- Remember:
 -- type Application = Request -> (Response -> IO ResponseReceived) -> IO ResponseReceived
 server :: Connection -> Application
-server db request respond = todo
+server db request respond = do
+  let path = pathInfo request
+  result <- perform db (parseCommand path)
+  respond $ responseLBS status200 [] (encodeResponse result)
 
 port :: Int
 port = 3421
