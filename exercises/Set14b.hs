@@ -112,8 +112,11 @@ balanceQuery :: Query
 balanceQuery = Query (T.pack "SELECT amount FROM events WHERE account = ?;")
 
 balance :: Connection -> T.Text -> IO Int
-balance db account = todo -- do res <- query db balanceQuery [account]
-                        -- return (sum res)
+balance db account = todo
+  -- do
+  -- res <- query db balanceQuery [account] -- :: [[Int]]
+  -- let r = head (foldr (:) res [])  -- :: IO Int
+  -- return r
 
 -- balance db account
 --            = do res <- query db balanceQuery account :: IO [Int]
@@ -157,7 +160,11 @@ parseInt :: T.Text -> Maybe Int
 parseInt = readMaybe . T.unpack
 
 parseCommand :: [T.Text] -> Maybe Command
-parseCommand = todo
+parseCommand path
+  | head path == T.pack "balance" = Just (Balance (path !! 1))
+  | head path == T.pack "deposit" = Just (Deposit (path !! 1) (amount (parseInt (path !! 2))))
+    where amount (Just a) = a
+          amount Nothing = 0
 
 ------------------------------------------------------------------------------
 -- Ex 4: Running commands. Implement the IO operation perform that takes a
