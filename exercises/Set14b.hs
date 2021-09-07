@@ -165,7 +165,7 @@ parseCommand [cm,acc] -- =
   | otherwise              = Nothing
 parseCommand [cm,acc,val] -- 
   | cm == T.pack "deposit"  = parseInt val >>= \v -> Just (Deposit acc v)
-  | cm == T.pack "withdraw" = parseInt val >>= \v -> (Deposit acc (-1*v))
+  | cm == T.pack "withdraw" = parseInt val >>= \v -> Just (Deposit acc (-1*v))
   | otherwise = Nothing                                                             
 parseCommand _ = Nothing
 
