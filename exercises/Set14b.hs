@@ -162,11 +162,9 @@ parseInt = readMaybe . T.unpack
 parseCommand :: [T.Text] -> Maybe Command
 parseCommand [cm,acc] -- = 
   | cm == T.pack "balance" = Just (Balance acc)
-  | otherwise              = Nothing
 parseCommand [cm,acc,val] -- 
   | cm == T.pack "deposit"  = parseInt val >>= \v -> Just (Deposit acc v)
-  | cm == T.pack "withdraw" = parseInt val >>= \v -> Just (Deposit acc (-1*v))
-  | otherwise = Nothing                                                             
+  | cm == T.pack "withdraw" = parseInt val >>= \v -> Just (Deposit acc (-1*v))                                                 
 parseCommand _ = Nothing
 
 ------------------------------------------------------------------------------
