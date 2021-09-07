@@ -118,15 +118,11 @@ data Address = Address String String String
   deriving (Show,Eq)
 
 validateAddress :: String -> String -> String -> Validation Address
-validateAddress streetName streetNumber postCode = todo
--- liftA2 formAddress checkedName checkedNumber checkedCode
-  --where checkedName = check (length streetName <= 20) "Invalid street name" streetName
-    --    checkedNumber = check (all isDigit streetNumber) "Invalid street number" streetNumber
-    --    checkedCode = check (length postCode == 5) "Invalid postcode" postCode
-    --    formAddress name number code = Address (show name) (show number) (show code)
-        -- formAddress name number code = Address (show name) (show number) (show code)
-          -- (Address name number code)
-          -- Address (pure name) (pure number) (pure code)
+validateAddress streetName streetNumber postCode = formAddress <$> checkedName <*> checkedNumber <*> checkedCode
+  where checkedName = check (length streetName <= 20) "Invalid street name" streetName
+        checkedNumber = check (all isDigit streetNumber) "Invalid street number" streetNumber
+        checkedCode = check (length postCode == 5 && all isDigit postCode) "Invalid postcode" postCode
+        formAddress name number code = Address name number code
 
 ------------------------------------------------------------------------------
 -- Ex 6: Given the names, ages and employment statuses of two
@@ -271,7 +267,7 @@ instance Functor Priced where
 
 instance Applicative Priced where
   pure = Priced 0
-  liftA2 f (pure x) (pure y) = Priced 0 (f x y)
+  liftA2 = todo -- f (pure x) (pure y) = Priced 0 (f x y)
   -- f (Priced x y) (Priced z w) = Priced (f x z) (f y w)
   -- liftA2 f a b = Priced 0 (f a b)
 
