@@ -172,23 +172,11 @@ frequencies (x:ys) = (x, length xs) : frequencies others
 --  [0,1,8]
 --  [2,4,10]
 
--- NOT SOLVED!
-
 genList :: Gen [Int]
-genList =
-  sized $
-    \n -> do
-      k <- choose (0, n)
-      sequence [ a | _ <- [1..k] ]
-  
-  -- sized $ \n -> choose (0, n)
-
---  a <- suchThat arbitrary (\x -> x >= 1 && x <= 10)
-  
-  -- do
-  -- c <- elements [1..10]
-  -- n <- choose (3,5)
-  -- return (replicate n c)
+genList = do
+  k <- choose (3,5)
+  result <- vectorOf k (elements [1..10])
+  return (sort result)
 
 ------------------------------------------------------------------------------
 -- Ex 7: Here are the datatypes Arg and Expression from Set 15. Write
