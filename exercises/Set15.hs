@@ -145,6 +145,10 @@ twoPersons :: Applicative f =>
   f String -> f Int -> f Bool -> f String -> f Int -> f Bool
   -> f [Person]
 twoPersons name1 age1 employed1 name2 age2 employed2 = todo
+  -- liftA2 (++) [Person <$> name1 <*> age1 <*> employed1] [Person <$> name2 <*> age2 <*> employed2]
+  -- where formPerson n a e = Person n a e
+
+-- formPerson :: String -> Int -> Bool -> Person
 
 ------------------------------------------------------------------------------
 -- Ex 7: Validate a String that's either a Bool or an Int. The return
@@ -164,13 +168,25 @@ twoPersons name1 age1 employed1 name2 age2 employed2 = todo
 --  boolOrInt "Falseb"  ==> Errors ["Not a Bool","Not an Int"]
 
 boolOrInt :: String -> Validation (Either Bool Int)
-boolOrInt s = todo -- check (parseBool s) "Not a Bool" <|> check (parseInt s) "Not an Int"
+boolOrInt s = todo -- validateInt s <|> parseBool s
 
 parseInt :: String -> Maybe Int
 parseInt = readMaybe
 
-parseBool :: String -> Maybe Bool
-parseBool = readMaybe
+validateInt :: String -> Validation Int
+validateInt s = case parseInt s of
+  Just v -> check (1==1) "Not an Int" v
+  Nothing -> invalid "Not an Int"
+                             
+
+parseBool :: String -> Validation Bool
+parseBool s = validateTrue s *> validateFalse s
+
+validateTrue :: String -> Validation Bool
+validateTrue s = check (s == "True") "Not a Bool" True
+
+validateFalse :: String -> Validation Bool
+validateFalse s = check (s == "False") "Not a Bool" False
 
 ------------------------------------------------------------------------------
 -- Ex 8: Improved phone number validation. Implement the function
@@ -346,7 +362,8 @@ myFmap = todo
 --       ==> Errors ["zero","zero","zero"]
 
 tryAll :: Alternative f => (a -> f b) -> [a] -> f b
-tryAll = todo
+tryAll func [] = empty
+tryAll func (x:xs) = (func x) <|> (tryAll func xs)
 
 ------------------------------------------------------------------------------
 -- Ex 14: Here's the type `Both` that expresses the composition of
