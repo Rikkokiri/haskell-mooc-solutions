@@ -162,8 +162,10 @@ parseInt = readMaybe . T.unpack
 parseCommand :: [T.Text] -> Maybe Command
 parseCommand [cm,acc] = Just (Balance acc)
 parseCommand [cm,acc,val] = Just (Deposit acc (parseAmount $ parseInt val))
-  where parseAmount (Just a) = a
-        parseAmount Nothing  = 0
+parseCommand _ = Nothing
+
+parseAmount (Just a) = a
+parseAmount Nothing  = 0
 
 -- First, slightly uglier solution:
 --  | head path == T.pack "balance" = Just (Balance (path !! 1))
@@ -195,7 +197,13 @@ parseCommand [cm,acc,val] = Just (Deposit acc (parseAmount $ parseInt val))
 --   "0"
 
 perform :: Connection -> Maybe Command -> IO T.Text
-perform = todo
+perform db (Just (Balance acc)) = do
+  bal <- balance db acc
+  return $ T.pack $ show bal
+perform db (Just (Deposit acc val)) = do
+  deposit db acc val
+  return $ T.pack "OK"
+perform db _ = return $ T.pack ""
 
 ------------------------------------------------------------------------------
 -- Ex 5: Next up, let's set up a simple HTTP server. Implement a WAI
@@ -215,7 +223,9 @@ encodeResponse t = LB.fromStrict (encodeUtf8 t)
 -- Remember:
 -- type Application = Request -> (Response -> IO ResponseReceived) -> IO ResponseReceived
 simpleServer :: Application
-simpleServer request respond = todo
+simpleServer request respond = do
+  let response = responseLBS status200 [] (encodeResponse $ T.pack "BANK")
+  respond response
 
 ------------------------------------------------------------------------------
 -- Ex 6: Now we finally have all the pieces we need to actually
