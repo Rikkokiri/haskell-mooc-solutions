@@ -164,15 +164,10 @@ parseCommand [cm,acc] -- =
   | cm == T.pack "balance" = Just (Balance acc)
   | otherwise              = Nothing
 parseCommand [cm,acc,val] -- 
-  | cm == T.pack "deposit"  = case (parseInt val) of
-                              Nothing -> Nothing
-                              Just v -> Just (Deposit acc v)
-  | cm == T.pack "withdraw" = case (parseInt val) of
-                              Nothing -> Nothing
-                              Just v -> Just (Deposit acc (-1*v))
+  | cm == T.pack "deposit"  = parseInt val >>= \v -> Just (Deposit acc v)
+  | cm == T.pack "withdraw" = parseInt val >>= \v -> (Deposit acc (-1*v))
   | otherwise = Nothing                                                             
 parseCommand _ = Nothing
-
 
 ------------------------------------------------------------------------------
 -- Ex 4: Running commands. Implement the IO operation perform that takes a
