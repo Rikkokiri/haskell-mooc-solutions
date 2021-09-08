@@ -168,25 +168,21 @@ twoPersons name1 age1 employed1 name2 age2 employed2 = todo
 --  boolOrInt "Falseb"  ==> Errors ["Not a Bool","Not an Int"]
 
 boolOrInt :: String -> Validation (Either Bool Int)
-boolOrInt s = todo -- validateInt s <|> parseBool s
+boolOrInt s = validateBool s <|> validateInt s
 
 parseInt :: String -> Maybe Int
 parseInt = readMaybe
 
-validateInt :: String -> Validation Int
+validateInt :: String -> Validation (Either Bool Int)
 validateInt s = case parseInt s of
-  Just v -> check (1==1) "Not an Int" v
+  Just v -> check (1==1) "Not an Int" (Right v)
   Nothing -> invalid "Not an Int"
-                             
 
-parseBool :: String -> Validation Bool
-parseBool s = validateTrue s *> validateFalse s
-
-validateTrue :: String -> Validation Bool
-validateTrue s = check (s == "True") "Not a Bool" True
-
-validateFalse :: String -> Validation Bool
-validateFalse s = check (s == "False") "Not a Bool" False
+validateBool :: String -> Validation (Either Bool Int)
+validateBool s
+  | s == "True" = pure (Left True)
+  | s == "False" = pure (Left False)
+  | otherwise = invalid "Not a Bool"
 
 ------------------------------------------------------------------------------
 -- Ex 8: Improved phone number validation. Implement the function
@@ -210,7 +206,20 @@ validateFalse s = check (s == "False") "Not a Bool" False
 --    ==> Errors ["Too long"]
 
 normalizePhone :: String -> Validation String
-normalizePhone = todo
+normalizePhone s = checkLength str *> checkDigits str
+  where str = removeSpaces s
+
+removeSpaces :: String -> String
+removeSpaces "" = ""
+removeSpaces (x:xs) | isSpace x = removeSpaces xs
+                    | otherwise = x:(removeSpaces xs)
+
+checkLength :: String -> Validation String
+checkLength s = check (length s <= 10) "Too long" s
+
+checkDigits :: String -> Validation String
+checkDigits s = traverse checkChar s
+  where checkChar c = check (isDigit c) ("Invalid character: " ++ [c]) c
 
 ------------------------------------------------------------------------------
 -- Ex 9: Parsing expressions. The Expression type describes an
@@ -283,9 +292,17 @@ instance Functor Priced where
 
 instance Applicative Priced where
   pure = Priced 0
-  liftA2 = todo -- f (pure x) (pure y) = Priced 0 (f x y)
-  -- f (Priced x y) (Priced z w) = Priced (f x z) (f y w)
+  liftA2 = todo
+  -- liftA2 f a b = f <$> a <*> b  -- Timeout
+  -- liftA2 f x y = Priced 0 (f x y)
+  -- liftA2 f (Priced x y) (Priced z w) = (Priced (f x z) (f y w))
+  -- liftA2 f = todo -- f (pure x) (pure y) = Priced 0 (f x y)
   -- liftA2 f a b = Priced 0 (f a b)
+
+
+-- liftA2 f x = (<*>) (fmap f x)
+
+-- liftA2 :: (a -> b -> c) -> f a -> f b -> f c
 
 ------------------------------------------------------------------------------
 -- Ex 11: This and the next exercise will use a copy of the
